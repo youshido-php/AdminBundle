@@ -1,0 +1,4 @@
+services:
+  adminContext:
+      class:  Youshido\AdminBundle\Service\AdminContext
+      arguments: [@service_container]

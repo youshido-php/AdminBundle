@@ -1,0 +1,24 @@
+<div class="panel">
+    <div class="panel-heading clearfix">
+        <span class="panel-title">
+            <span class="fa fa-table"></span>
+            {{ widget.title }}
+        </span>
+        <span class="pull-right">
+            {% if widget.actions.add is defined %}
+            <a class="btn btn-primary light btn-sm btn-rounded fw600 ml10 w100"
+               href="{{ path('admin.dictionary.add', { 'module': adminContext.activeModule.name }) }}">
+                <i class="fa fa-plus pr5"></i>Add</a>
+            {% endif %}
+        </span>
+    </div>
+    <div class="panel-body pn">
+        <div class="bs-component">
+            {{ include('@YAdmin/_elements/_table_body.html.twig', {
+                'actions': widget.actions,
+                'tableConfig': widget.config,
+                'objects': widget.objects
+            }) }}
+        </div>
+    </div>
+</div>

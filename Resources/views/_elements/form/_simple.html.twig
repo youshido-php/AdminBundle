@@ -1,0 +1,18 @@
+{#{{ dump(column, form) }}#}
+{{ form_label(form[column], null, { 'label_attr' : { 'class' : 'col-md-2 control-label' } }) }}
+<div class="col-md-8">
+    {% if info.descrition is defined %}
+        <span class="help-block mt5">
+            <i class="fa fa-info"></i>{{ info.description }}
+        </span>
+    {% endif %}
+    {% if info.type == "file" %}
+        {% set path = attribute(info, 'value') %}
+        {% if path is defined %}
+            <a href="{{ path }}" target="_blank">view file</a>
+        {% else %}
+            <small>no file</small>
+        {% endif %}
+    {% endif %}
+    {{ form_widget(form[column]) }}
+</div>

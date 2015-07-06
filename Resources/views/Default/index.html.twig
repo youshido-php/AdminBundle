@@ -1,0 +1,8 @@
+{% extends "@YAdmin/_layout.html.twig" %}
+
+{% block content %}
+{% for w in widgets %}
+    {{ include('@YAdmin/_fragments/'~ w.type ~'.html.twig', { 'widget' : w }) }}
+{% endfor %}
+
+{% endblock %}

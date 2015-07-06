@@ -1,0 +1,89 @@
+{% if pager.pagesCount and pager.pagesCount > 1 %}
+    <ul class="pagination">
+        {% if pager.currentPage == 1 %}
+            <li class="disabled" }>
+                <span><i class="fa fa-angle-left"></i></span>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ pager.link }}page/{{ pager.currentPage-1 }}"><i class="fa fa-angle-left"></i></a>
+            </li>
+        {% endif %}
+        {#{*------------------*}#}
+        {% if pager.currentPage < 9 %}
+            {% for i in 1..min(pager.pagesCount, 10) %}
+                {% if i != pager.currentPage %}
+                    <li><a href="{{ pager.link }}page/{{ i }}">{{ i }}</a></li>
+                {% else %}
+                    <li class="active"><span>{{ i }}</span></li>
+                {% endif %}
+            {% endfor %}
+            {% if pager.pagesCount > 9 %}
+                <li>
+                    <span>...</span>
+                </li>
+                <li>
+                    <a href="{{ pager.link }}page/{pager.pagesCount}">{{ pager.pagesCount }}</a>
+                </li>
+            {% endif %}
+        {% elseif pager.currentPage < (pager.pagesCount-5) %}
+            {% if 1 == pager.currentPage %}
+                <li class="active">
+                    <span>1</span>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ pager.link }}page/1">1</a>
+                </li>
+            {% endif %}
+            <li>
+                <span>...</span>
+            </li>
+            {% for i in (pager.currentPage-5)..(pager.currentPage+6) %}
+                {% if i != pager.currentPage %}
+                    <li><a href="{{ pager.link }}page/{{ i }}">{{ i }}</a></li>
+                {% else %}
+                    <li class="active"><span>{{ i }}</span></li>
+                {% endif %}
+            {% endfor %}
+            {% if pager.pagesCount>9 %}
+                <li>
+                    <span>...</span>
+                </li>
+                <li>
+                    <a href="{{ pager.link }}page/{pager.pagesCount}">{{ pager.pagesCount }}</a>
+                </li>
+            {% endif %}
+        {% else %}
+            {% if 1 == pager.currentPage %}
+                <li class="active disabled">
+                    <span>1</span>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ pager.link }}page/1">1</a>
+                </li>
+            {% endif %}
+            <li>
+                <a href="#">...</a>
+            </li>
+            {% for i in (pager.pagesCount-9)..(pager.pagesCount) %}
+                {% if i != pager.currentPage %}
+                    <li><a href="{{ pager.link }}page/{{ i }}/">{{ i }}</a></li>
+                {% else %}
+                    <li class="active disabled"><a href="{{ pager.link }}page/{{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {#{*------------------*}#}
+        {% if pager.pagesCount == pager.currentPage %}
+            <li class="disabled">
+                <span><i class="fa fa-angle-right"></i></span>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ pager.link }}page/{{ pager.currentPage + 1 }}"><i class="fa fa-angle-right"></i></a>
+            </li>
+        {% endif %}
+    </ul>
+{% endif %}

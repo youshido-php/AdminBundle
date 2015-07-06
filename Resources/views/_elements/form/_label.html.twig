@@ -1,0 +1,5 @@
+{{ form_label(form[column], null, { 'label_attr' : { 'class' : 'col-md-2 control-label' } }) }}
+<div class="col-md-8">
+    <p class="form-control-static">{{ attribute(object, column) }}</p>
+    {{ form_widget(form[column], { 'type' : 'hidden' }) }}
+</div>

@@ -1,0 +1,54 @@
+<!-- Start: Sidebar -->
+<aside id="sidebar_left" class="nano nano-light affix ">
+
+    <!-- Start: Sidebar Left Content -->
+    <div class="sidebar-left-content nano-content">
+
+
+        <!-- Start: Sidebar Menu -->
+        <ul class="nav sidebar-menu">
+            <li class="sidebar-label pt20">Menu</li>
+            {% for key,item in adminContext.structure.modules if item.private is not defined%}
+                {% if item.type == "Group" %}
+                    <li>
+                        <a class="accordion-toggle{% if item.isActive is defined %} active menu-open{% endif %}" href="">
+                            <span class="{{ item.icon|default("imoon imoon-book") }}" style="font-size: 15px;"></span>
+                            <span class="sidebar-title">{{ item.title }}</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="nav sub-nav">
+                            {% for node in item.nodes %}
+                                <li{% if node.isActive is defined %} class="active"{% endif %}>
+                                    <a href="{{ node.link }}">
+                                        <span class="{{ node.icon|default('fa fa-bars') }}" style="font-size: 14px;"></span>
+                                        {{ node.title }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% elseif item.group is not defined %}
+                    <li {% if item.isActive is defined %} class="active"{% endif %}>
+                        <a href="{{ item.link }}">
+                            <span class="{{ item.icon|default("fa fa-angle-right") }}" style="font-size: 15px;"></span>
+                            <span class="sidebar-title">{{ item.title }}</span>
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <!-- End: Sidebar Menu -->
+
+        <!-- Start: Sidebar Collapse Button -->
+        <div class="sidebar-toggle-mini">
+            <a href="">
+                <span class="fa fa-sign-out"></span>
+            </a>
+        </div>
+        <!-- End: Sidebar Collapse Button -->
+
+    </div>
+    <!-- End: Sidebar Left Content -->
+
+</aside>
+

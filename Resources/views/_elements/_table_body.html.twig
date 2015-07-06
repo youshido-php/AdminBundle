@@ -1,0 +1,68 @@
+<table class="table table-hover">
+    <thead>
+        <tr class="bg-light">
+            {% for columnName, columnInfo in tableConfig.columns %}
+                <th class="header_{{ columnName }}"
+                    id="field-title-{{ columnName }}">{{ columnInfo.title }}</th>
+            {% endfor %}
+            {% if actions %}
+            <th></th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for object in objects %}
+        <tr>
+            {% for columnName, columnInfo in tableConfig.columns %}
+                <td class="table_cell_{{ columnInfo.type|default('text') }} table_cell_{{ columnName }}">
+                    {% set value = attribute(object, columnName) %}
+                    {% if columnName in ["title", "objectTitle"] %}
+                        {% if actions.edit is defined %}
+                            <a href="{{ path(actions.edit.route, {'id' : object.id, 'module': tableConfig.name }) }}" class="fw600">{{ value }}</a>
+                        {% else %}
+                            <span class="fw600">{{ value }}</span>
+                        {% endif %}
+                    {% elseif columnInfo.type == "datetime" %}
+                        {{ value|date("m/d/Y H:i:s") }}
+                        {#{{ dump(value) }}#}
+                    {% elseif columnInfo.type == "date" %}
+                        {{ value|date("m/d/Y") }}
+                    {% elseif columnInfo.type == "entity" and columnInfo.multiple is defined %}
+                        {{ value|join(', ') }}
+                    {% elseif columnInfo.type == "file" %}
+                        {% set path = attribute(object, columnName ~ "Path") %}
+                        {% if path %}
+                            <a href="{{ path }}" target="_blank">view file</a>
+                        {% else %}
+                            <small>no file</small>
+                        {% endif %}
+                    {% elseif columnInfo.type == "image" %}
+                        {% set path = attribute(object, columnName ~ "Path") %}
+                        {% if path %}
+                            <img src="{{ path | imagine_filter('preview_50') }}"/>
+                        {% else %}
+                            <small>no image</small>
+                        {% endif %}
+                    {% elseif columnInfo.type == "collection" %}
+                    {% elseif columnInfo.type == "entity" %}
+                        {{ value }}
+                    {% elseif columnInfo.type == "boolean" %}
+                        {% if value %}
+                            <span class="badge badge-success">yes</span>
+                        {% else %}
+                            <span class="badge badge-default">no</span>
+                        {% endif %}
+                    {% else %}
+                        {{ value[:30] }}
+                    {% endif %}
+                </td>
+            {% endfor %}
+            {% if actions %}
+            <td class="text-right">
+                {{ include('@YAdmin/_elements/_object_actions.html.twig') }}
+            </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

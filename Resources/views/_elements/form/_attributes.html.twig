@@ -1,0 +1,30 @@
+{% if skipLabel is not defined %}
+{{ form_label(form[column], null, { 'label_attr' : { 'class' : 'col-md-2 control-label' } }) }}
+{% endif %}
+<div class="col-md-8">
+    <ul class="list-group tags" data-prototype="{{ form_widget(form[column].vars.prototype)|e }}">
+        {% for attr in form[column] %}
+            <li class="list-group-item clearfix">
+                <div class="form form-inline pull-left">
+                    <div class="form-group">
+                        {{ form_widget(attr.name, {'attr' : {'placeholder': 'Enter name'} } ) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_widget(attr.type) }}
+                    </div>
+                    <div class="form-group ml15">
+                        System {{ form_widget(attr.system) }}
+                    </div>
+                    <div class="form-group ml15">
+                        {{ form_widget(attr.default_value) }}
+                    </div>
+                </div>
+                <button class="pull-right btn btn-rounded btn-dark btn-sm delete-attribute-handler">delete
+                </button>
+            </li>
+        {% else %}
+            {% do form[column].setRendered %}
+        {% endfor %}
+    </ul>
+</div>
+<button class="btn btn-primary btn-rounded btn-sm add-attribute-handler">Add new attribute</button>

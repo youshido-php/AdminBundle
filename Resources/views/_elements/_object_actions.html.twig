@@ -1,0 +1,9 @@
+{% for actionName, actionInfo in actions %}
+    {% if actionName not in ["default", "add", "dashboard"] %}
+        <a href="{{ path(actionInfo.route, {'id' : object.id, 'module': tableConfig.name }) }}"
+           type="button" class="btn btn-rounded btn-link w70 btn-sm">
+            <i class="fa fa-{{ actionName }}"></i>
+            {{ actionInfo.title }}
+        </a>
+    {% endif %}
+{% endfor %}

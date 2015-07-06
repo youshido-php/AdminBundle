@@ -1,0 +1,90 @@
+{% extends '@YAdmin/_layout.html.twig' %}
+
+{% block content %}
+<div class="row">
+    <div class="panel">
+        {{ form_start(form, {'attr' : {'id' : 'form-list-view', 'class' : 'form-horizontal'}}) }}
+
+        <div class="panel-heading">
+            {% block viewPanelHeading %}
+                <ul class="nav panel-tabs-border panel-tabs panel-tabs-left">
+                    {% for tabAlias, tabOptions in moduleConfig.tabs %}
+                        <li{% if loop.index == 1 %} class="active"{% endif %}><a href="#{{ tabAlias }}"
+                                                                                 data-toggle="tab">{{ tabOptions.title }}</a>
+                        </li>
+                    {% else %}
+                        <span class="panel-title">Object information</span>
+                    {% endfor %}
+                </ul>
+            {% endblock %}
+        </div>
+
+        <div class="panel-body">
+            {% block viewPanelBody %}
+            <div class="tab-content pn br-n">
+                {% for tabAlias, tabOptions in moduleConfig.tabs %}
+                    <div id="{{ tabAlias }}" class="tab-pane{% if loop.index == 1 %} active{% endif %}">
+                        {{ include(tabOptions.template) }}
+                    </div>
+                {% else %}
+                    {{ include('@YAdmin/_fragments/formFields.html.twig') }}
+                {% endfor %}
+                {% endblock %}
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="row">
+                <div class="col-md-2">
+                    <button class="btn btn-rounded btn-default btn-block button-back-handler pull-right"
+                            style="max-width: 100px;">
+                        <i class="fa fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="col-md-8">
+                    <button type="submit" class="btn btn-rounded btn-primary btn-block light"
+                            style="max-width: 130px;">
+                        <i class="fa fa-save"></i> Save
+                    </button>
+                </div>
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+
+    {% endblock %}
+
+    {% block javascripts %}
+        {{ parent() }}
+        <script>
+            var $collectionHolder;
+            var $addTagLink = $('.add-attribute-handler');
+            if ($addTagLink.length) {
+                var $newLinkLi = $('<li class="list-group-item"></li>').append($addTagLink);
+
+                jQuery(document).ready(function () {
+                    $collectionHolder = $('ul.tags');
+                    $collectionHolder.append($newLinkLi);
+                    $collectionHolder.data('index', $collectionHolder.find('.list-group-item').length);
+                    $addTagLink.on('click', function (e) {
+                        e.preventDefault();
+                        addObjectForm($collectionHolder, $newLinkLi);
+                    });
+                });
+
+                $('.delete-attribute-handler').on("click", function (event) {
+                    $(event.currentTarget).closest('.list-group-item').remove();
+                });
+
+                function addObjectForm($collectionHolder, $newLinkLi) {
+                    var prototype = $collectionHolder.data('prototype');
+                    var index     = $collectionHolder.data('index');
+                    var newForm   = prototype.replace(/__name__/g, index);
+                    $collectionHolder.data('index', index + 1);
+
+                    var $newFormLi = $('<li class="list-group-item"></li>').append(newForm);
+                    $newLinkLi.before($newFormLi);
+                }
+            }
+
+        </script>
+    {% endblock %}

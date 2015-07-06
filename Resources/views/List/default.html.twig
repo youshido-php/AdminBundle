@@ -1,0 +1,47 @@
+{% extends '@YAdmin/_layout.html.twig' %}
+
+{% block content %}
+    {% if moduleConfig.filters is defined %}
+    <div class="panel">
+        <div class="panel-heading clearfix">
+            {{ form_start(filters) }}
+            <span class="panel-title">
+                    {% for filterKey in moduleConfig.filters|keys %}
+                        {{ form_widget(filters[filterKey]) }}
+                    {% endfor %}
+            </span>
+            <span class="pull-right">
+                <button type="submit" class="btn btn-light btn-rounded btn-success btn-sm w100">Filter</button>
+            </span>
+            {{ form_end(filters) }}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="panel">
+        <div class="panel-heading clearfix">
+            <span class="panel-title">
+                <span class="fa fa-table"></span>
+                {{ tableTitle|default("Data") }}
+            </span>
+            <span class="pull-right">
+                {% if moduleConfig.actions.add is defined %}
+                    <a class="btn btn-primary light btn-sm btn-rounded fw600 ml10 w100"
+                            href="{{ path(moduleConfig.actions.add.route, { 'module': adminContext.activeModule.name }) }}">
+                        <i class="fa fa-plus pr5"></i>Add</a>
+                {% endif %}
+            </span>
+        </div>
+        <div class="panel-body pn">
+            <div class="bs-component">
+                {{ include('@YAdmin/_elements/_table_body.html.twig', { tableConfig: moduleConfig, actions: moduleConfig.actions }) }}
+            </div>
+        </div>
+        {% if pager.pagesCount and pager.pagesCount > 1 %}
+        <div class="panel-footer">
+            {{ include('@YAdmin/List/pager.html.twig') }}
+        </div>
+        {% endif %}
+    </div>
+
+{% endblock %}

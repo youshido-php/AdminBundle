@@ -1,0 +1,4 @@
+{{ form_label(form[column], null, { 'label_attr' : { 'class' : 'col-md-2 control-label' } }) }}
+<div class="col-md-{% if info.multiple is defined %}8{% else %}5{% endif %}">
+    {{ form_widget(form[column]) }}
+</div>

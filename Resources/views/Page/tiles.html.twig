@@ -1,0 +1,48 @@
+{% extends '@YAdmin/_layout.html.twig' %}
+
+{% block content %}
+    <div class="row mb10">
+        {% for object in objects %}
+            <div class="col-sm-4 col-md-3">
+                <div class="bs-component">
+                    <div class="panel panel-tile text-center br-a br-light">
+                        <div class="panel-body bg-light">
+                            <i class="fa fa-home text-muted fs70 mt10"></i>
+
+                            <h1 class="fs26 mbn">{{ object.alias }}</h1>
+                            <h6 class="text-primary-light">
+                                {% if moduleConfig.actions is defined %}
+                                    {{ include('@YAdmin/_elements/_object_actions.html.twig', {tableConfig: moduleConfig, actions: moduleConfig.actions}) }}
+                                {% endif %}
+                            </h6>
+                        </div>
+                        <div class="panel-footer bg-light dark br-t br-light p12">
+                                <span class="fs11">
+                                    {{ object.title }}
+                                </span>
+                        </div>
+                    </div>
+                    <div id="source-button" class="btn btn-primary btn-xs" style="display: none;">&lt; &gt;</div>
+                </div>
+            </div>
+        {% endfor %}
+        {% if moduleConfig.actions.add is defined %}
+        <div class="col-sm-4 col-md-3">
+            <div class="bs-component">
+                <div class="panel panel-tile text-center br-a br-light cursor" onclick="window.location.href='{{ path(moduleConfig.actions.add.route, { 'module': adminContext.activeModule.name }) }}'">
+                    <div class="panel-body bg-light dark">
+                        <i class="fa fa-plus text-muted fs70 mt10"></i>
+
+                        <h1 class="fs26 mbn mt20 pb30">Add new</h1>
+                        <span class="pt5">&nbsp;</span>
+                    </div>
+                </div>
+                <div id="source-button" class="btn btn-primary btn-xs" style="display: none;">&lt; &gt;</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {{ include('@YAdmin/List/pager.html.twig') }}
+
+{% endblock %}

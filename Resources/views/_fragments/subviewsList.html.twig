@@ -1,0 +1,17 @@
+{% if subviews|length or object.subviewsAllowed %}
+    <hr class="short"/>
+    <h4>Sub views</h4>
+    <div class="dd mb35">
+        <ol class="dd-list">
+            {% for view in subviews %}
+                <li class="dd-item">
+                    <div class="dd-handle">
+                        <a href="{{ path('admin.dictionary.edit', {'id' : view.id, 'module': 'cms-view-constructor' }) }}">{{ view.objectTitle }}</a>
+                        <small>({{ view.name }})</small>
+                        <span class="text-success pull-right fs11 fw600">{{ view.sourceTitle }}</span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ol>
+    </div>
+{% endif %}

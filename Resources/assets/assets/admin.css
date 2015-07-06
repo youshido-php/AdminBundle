@@ -1,0 +1,25 @@
+.dd3-handle, .dd3-handle:hover {
+    margin:0;
+    height: 100%;
+    background: #ccc;
+}
+.dd3-content {
+    padding: 0 10px 0 40px;
+}
+.dd3-content .text {
+    padding-top: 3px;
+    display: inline-block;
+}
+.dd3-content:hover {
+    background: -webkit-linear-gradient(top,#fafafa 0%,#eee 100%);
+    background: linear-gradient(top,#fafafa 0%,#eee 100%);
+    cursor: pointer;
+    color: #666666;
+}
+.dd3-content input {
+    display: inline-block;
+    background: transparent;
+    border: none;
+    padding: 4px 5px 0;
+    border-bottom: 1px solid grey;
+}
