@@ -16,7 +16,11 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
 use Symfony\Component\Form\FormBuilder;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BaseEntityController extends Controller
 {
@@ -71,6 +75,27 @@ class BaseEntityController extends Controller
                 'pagesCount'  => ceil(count($paginator) / $perPageCount),
             ],
         ]);
+    }
+
+    protected function exportAction($moduleConfig, Request $request)
+    {
+        $this->get('adminContext')->setActiveModuleName($moduleConfig);
+        $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('export');
+
+        $filename = $this->get('adminExcelExporter')->export($moduleConfig);
+
+        $response = new Response();
+        $response->headers->set('Cache-Control', 'private');
+        $response->headers->set('Content-type', mime_content_type($filename));
+        $response->headers->set('Content-Disposition',
+            'attachment; filename="' . (new \DateTime())->format('Y.m.d H:i:s'). '.' . pathinfo($filename, PATHINFO_EXTENSION) . '";');
+        $response->headers->set('Content-length', filesize($filename));
+
+        $response->sendHeaders();
+
+        $response->setContent(readfile($filename));
+
+        return $response;
     }
 
     protected function processDetailAction($moduleConfig, $object = null, Request $request, $actionName)

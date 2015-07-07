@@ -30,6 +30,13 @@ class DictionaryController extends BaseEntityController {
     }
 
     /**
+     * @Route("/dictionary/{module}/export", name="admin.dictionary.export")
+     */
+    public function exportAction($module, Request $request) {
+        return parent::exportAction($module, $request);
+    }
+
+    /**
      * @Route("/dictionary/{module}/edit/{id}", name="admin.dictionary.edit")
      */
     public function editAction($module, $id, Request $request) {

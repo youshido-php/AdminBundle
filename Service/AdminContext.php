@@ -239,6 +239,7 @@ class AdminContext
             $columnInfo['type'] = $guess->getType();
         }
         if (empty($columnInfo['title'])) $columnInfo['title'] = Inflector::classify($columnName);
+        if (!array_key_exists('required', $columnInfo)) $columnInfo['required'] = true;
     }
 
     protected function get($id)

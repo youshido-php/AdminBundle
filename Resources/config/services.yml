@@ -2,3 +2,8 @@ services:
   adminContext:
       class:  Youshido\AdminBundle\Service\AdminContext
       arguments: [@service_container]
+
+  adminExcelExporter:
+      class: Youshido\AdminBundle\Service\ExcelExporter
+      calls:
+          - [setContainer, [@service_container] ]
