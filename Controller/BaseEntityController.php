@@ -16,11 +16,8 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
 use Symfony\Component\Form\FormBuilder;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BaseEntityController extends Controller
 {
@@ -38,7 +35,9 @@ class BaseEntityController extends Controller
             foreach ($moduleConfig['filters'] as $key => $value) {
                 if (empty($value)) $value = [];
                 $value = array_merge($moduleConfig['columns'][$key], $value);
-                $this->buildFormItem($key, $value, $filtersBuilder);
+                $value['required'] = false;
+                $value['placeholder'] = $value['title'];
+                $this->get('admin.form.helper')->buildFormItem($key, $value, $filtersBuilder);
             }
         }
         $filterForm = $filtersBuilder->getForm();
