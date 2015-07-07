@@ -20,11 +20,13 @@
                         {#<span class="label label-warning">2</span>#}
                     {#</a>#}
                 {#</li>#}
-                <li class="list-group-item">
-                    <a href="{{ path('homepage') }}" class="" target="_blank">
-                        <span class="fa fa-external-link pr5"></span>Go to the Public Section
-                    </a>
-                </li>
+                {% if routeExist('homepage') %}
+                    <li class="list-group-item">
+                        <a href="{{ path('homepage') }}" class="" target="_blank">
+                            <span class="fa fa-external-link pr5"></span>Go to the Public Section
+                        </a>
+                    </li>
+                {% endif %}
                 <li class="list-group-item">
                     <a href="{{ path('admin.logout') }}" class="">
                         <span class="fa fa-power-off pr5"></span> Logout </a>

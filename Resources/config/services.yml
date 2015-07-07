@@ -7,3 +7,11 @@ services:
       class: Youshido\AdminBundle\Service\ExcelExporter
       calls:
           - [setContainer, [@service_container] ]
+
+  app.twig_extension:
+      class: Youshido\AdminBundle\Twig\AdminExtension
+      public: true
+      calls:
+          - [ setContainer, [@service_container]]
+      tags:
+          - { name: twig.extension }
