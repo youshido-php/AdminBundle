@@ -31,6 +31,7 @@
     {% endblock %}
     <script src="vendor/jquery/jquery-1.11.1.min.js"></script>
     <script src="vendor/jquery/jquery_ui/jquery-ui.min.js"></script>
+    <script src="/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 
 </head>
 {% block bodyTags %}
@@ -102,9 +103,9 @@
 
         </div>
         {% for label, flashes in app.session.flashbag.all %}
-            {% for flash in flashes %}
-            <div class="notification-handler" data-type="{{ label }}">{{ flash }}</div>
-            {% endfor %}
+        {% for flash in flashes %}
+        <div class="notification-handler" data-type="{{ label }}">{{ flash }}</div>
+        {% endfor %}
         {% endfor %}
         <script src="vendor/plugins/select2/select2.min.js"></script>
         <script src="vendor/plugins/holder/holder.min.js"></script>

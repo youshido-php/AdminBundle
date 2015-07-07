@@ -104,6 +104,9 @@ class FormHelperService extends ContainerAware {
             case 'textarea':
                 $formBuilder->add($column, 'textarea', $options);
                 break;
+            case 'html':
+                $formBuilder->add($column, 'textarea', $options);
+                break;
             case 'boolean':
             case 'checkbox':
                 $formBuilder->add($column, 'checkbox', $options);
