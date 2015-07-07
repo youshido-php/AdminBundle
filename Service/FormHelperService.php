@@ -109,7 +109,7 @@ class FormHelperService extends ContainerAware {
                 break;
             case 'file':
                 $options = array_merge(array(
-                    'entity_class' => 'Youshido\\Bundle\\CMSBundle\\Structure\\Attribute\\FileAttribute',
+                    'entity_class' => 'Youshido\\CMSBundle\\Structure\\Attribute\\FileAttribute',
                     'entity_property' => 'value'
                 ), $options);
 
@@ -118,7 +118,7 @@ class FormHelperService extends ContainerAware {
             case 'image':
                 $options = array_merge(array(
                     'required' => false,
-                    'entity_class' => 'Youshido\\Bundle\\CMSBundle\\Structure\\Attribute\\ImageAttribute',
+                    'entity_class' => 'Youshido\\CMSBundle\\Structure\\Attribute\\ImageAttribute',
                     'entity_property' => 'value'
                 ), $options);
 
