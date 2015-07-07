@@ -197,7 +197,7 @@ class BaseEntityController extends Controller
         $formBuilder = $this->createFormBuilder($object, ['allow_extra_fields' => true, 'attr' => ['enctype' => 'multipart/form-data']]);
 
         foreach ($config['columns'] as $column => $info) {
-            $this->get('cms.form.helper')->buildFormItem($column, $info, $formBuilder);
+            $this->get('admin.form.helper')->buildFormItem($column, $info, $formBuilder);
         }
         $this->callHandlersWithParams('form.build', [$object, $formBuilder]);
         return $formBuilder->getForm();

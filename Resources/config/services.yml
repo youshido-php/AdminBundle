@@ -3,12 +3,17 @@ services:
       class:  Youshido\AdminBundle\Service\AdminContext
       arguments: [@service_container]
 
+  admin.form.helper:
+        class: Youshido\AdminBundle\Service\FormHelperService
+        calls:
+          - [ setContainer, [ @service_container ] ]
+
   adminExcelExporter:
       class: Youshido\AdminBundle\Service\ExcelExporter
       calls:
           - [setContainer, [@service_container] ]
 
-  app.twig_extension:
+  admin.twig_extension:
       class: Youshido\AdminBundle\Twig\AdminExtension
       public: true
       calls:
