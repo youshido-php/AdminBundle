@@ -29,7 +29,7 @@ class BaseEntityController extends Controller
 
         $filterData     = $this->getFilterData($request);
         $filtersBuilder = $this->get('form.factory')
-            ->createNamedBuilder('filter', 'form', $filterData, ['method' => 'post', 'attr' => ['class' => 'form form-inline']]);
+            ->createNamedBuilder('filter', 'form', $filterData, ['method' => 'get', 'csrf_protection' => false, 'attr' => ['class' => 'form form-inline']]);
 
         if (!empty($moduleConfig['filters'])) {
             foreach ($moduleConfig['filters'] as $key => $value) {
@@ -205,11 +205,7 @@ class BaseEntityController extends Controller
     protected function getFilterData(Request $request = null)
     {
         $moduleConfig = $this->get('adminContext')->getActiveModule();
-
-        if (empty($_SESSION['admin_filters'][$moduleConfig['name']])) {
-            $_SESSION['admin_filters'][$moduleConfig['name']] = array();
-        }
-        $filtersBag = &$_SESSION['admin_filters'][$moduleConfig['name']];
+        $filtersBag = [];
 
         if (!empty($request)) {
             $data = $request->get('filter', array());
