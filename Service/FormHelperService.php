@@ -105,11 +105,12 @@ class FormHelperService extends ContainerAware {
                 $formBuilder->add($column, 'textarea', $options);
                 break;
             case 'boolean':
+            case 'checkbox':
                 $formBuilder->add($column, 'checkbox', $options);
                 break;
             case 'file':
                 $options = array_merge(array(
-                    'entity_class' => 'Youshido\\CMSBundle\\Structure\\Attribute\\FileAttribute',
+                    'entity_class' => 'Youshido\\Bundle\\CMSBundle\\Structure\\Attribute\\FileAttribute',
                     'entity_property' => 'value'
                 ), $options);
 
@@ -118,7 +119,7 @@ class FormHelperService extends ContainerAware {
             case 'image':
                 $options = array_merge(array(
                     'required' => false,
-                    'entity_class' => 'Youshido\\CMSBundle\\Structure\\Attribute\\ImageAttribute',
+                    'entity_class' => 'Youshido\\Bundle\\CMSBundle\\Structure\\Attribute\\ImageAttribute',
                     'entity_property' => 'value'
                 ), $options);
 
@@ -129,6 +130,9 @@ class FormHelperService extends ContainerAware {
                 break;
             case 'hidden':
                 $formBuilder->add($column, 'hidden', $options);
+                break;
+            case 'choice':
+
                 break;
             default:
                 $formBuilder->add($column, 'text', $options);

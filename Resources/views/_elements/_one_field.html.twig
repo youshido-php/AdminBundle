@@ -3,7 +3,7 @@
         {% do form[column].setRendered %}
     {% else %}
         <div class="form-group">
-            {% if info.type in ["boolean", "textarea", "entity", "attributes", "label", "hidden", "image"] %}
+            {% if info.type in ["boolean", "textarea", "entity", "attributes", "label", "hidden", "image", "checkbox"] %}
                 {{ include('@YAdmin/_elements/form/_' ~ info.type ~'.html.twig') }}
             {% else %}
                 {{ include('@YAdmin/_elements/form/_simple.html.twig') }}
