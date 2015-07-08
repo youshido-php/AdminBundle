@@ -126,7 +126,7 @@ class BaseEntityController extends Controller
                     //return $this->redirectToRoute($moduleConfig['actions']['default']['route'], ['module' => $moduleConfig['name']]);
                 }
             } else {
-                dump($form->getErrorsAsString(), $form->getErrors(), $request->get('form'));
+                dump($form->getErrorsAsString(), $request->get('form'));
                 die();
             }
         }

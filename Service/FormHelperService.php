@@ -61,11 +61,14 @@ class FormHelperService extends ContainerAware {
 
         switch ($info['type']) {
             case 'date':
-                $transformer = new DateTimeToStringTransformer();
-
-                $formBuilder->add(
-                    $formBuilder->create($column, 'text', $options)->addModelTransformer($transformer)
-                );
+                //$transformer = new DateTimeToStringTransformer();
+                $options['attr']['class'] .= 'form-control';
+                $options['widget'] = 'single_text';
+                $options['format'] = 'yyyy-MM-dd';
+                //$formBuilder->add(
+                //    $formBuilder->create($column, 'text', $options)->addModelTransformer($transformer)
+                //);
+                $formBuilder->add($column, 'date', $options);
                 break;
             case 'entity':
                 $options = array_merge(array(
