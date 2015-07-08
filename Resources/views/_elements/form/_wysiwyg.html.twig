@@ -8,19 +8,19 @@
         cleanup: true,
         minHeight: 200,
         lang: 'en',
-        imageUpload: '/admin/files/upload/',
-        imageGetJson: '/admin/files/list/',
-        custom_css: ['css/style.css?2'],
-        base_href: base_url,
-        buttons: ['html', '|',
-//            'formatting', '|',
-            'bold', 'italic', 'deleted', '|',
-            'unorderedlist', 'orderedlist',
-//            'outdent', 'indent', '|',
-            'image', 'video'//, 'file', 'table', 'link', '|',
-//            'fontcolor', 'backcolor',
-//            '|', 'horizontalrule', '|', 'end', 'fullscreen'
-        ]//,
+//        imageUpload: '/admin/files/upload/',
+//        imageGetJson: '/admin/files/list/',
+        custom_css: ['css/main.css'],
+        base_href: "http://{{ app.request.baseUrl }}",
+//        buttons: ['html', '|',
+////            'formatting', '|',
+//            'bold', 'italic', 'deleted', '|',
+//            'unorderedlist', 'orderedlist',
+////            'outdent', 'indent', '|',
+//            'image', 'video'//, 'file', 'table', 'link', '|',
+////            'fontcolor', 'backcolor',
+////            '|', 'horizontalrule', '|', 'end', 'fullscreen'
+//        ]//,
 //        plugins: ['fullscreen:startFullscreen']
     });
 </script>
