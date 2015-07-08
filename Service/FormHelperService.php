@@ -102,9 +102,8 @@ class FormHelperService extends ContainerAware {
                 $formBuilder->add($column, 'collection', $options);
                 break;
             case 'textarea':
-                $formBuilder->add($column, 'textarea', $options);
-                break;
             case 'html':
+            case 'wysiwyg':
                 $formBuilder->add($column, 'textarea', $options);
                 break;
             case 'boolean':

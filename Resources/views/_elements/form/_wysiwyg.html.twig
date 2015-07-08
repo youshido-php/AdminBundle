@@ -1,0 +1,26 @@
+{{ form_label(form[column], null, { 'label_attr' : { 'class' : 'col-sm-2 control-label' } }) }}
+<div class="col-sm-10">
+    {{ form_widget(form[column], { 'attr': {'class': 'form-control redactor_content', 'rows': '10'} }) }}
+</div>
+<script>
+    $('.redactor_content').redactor({
+        convertDivs: true,
+        cleanup: true,
+        minHeight: 200,
+        lang: 'en',
+        imageUpload: '/admin/files/upload/',
+        imageGetJson: '/admin/files/list/',
+        custom_css: ['css/style.css?2'],
+        base_href: base_url,
+        buttons: ['html', '|',
+//            'formatting', '|',
+            'bold', 'italic', 'deleted', '|',
+            'unorderedlist', 'orderedlist',
+//            'outdent', 'indent', '|',
+            'image', 'video'//, 'file', 'table', 'link', '|',
+//            'fontcolor', 'backcolor',
+//            '|', 'horizontalrule', '|', 'end', 'fullscreen'
+        ]//,
+//        plugins: ['fullscreen:startFullscreen']
+    });
+</script>
