@@ -83,7 +83,7 @@ class DictionaryController extends BaseEntityController {
         //]);
 
     }
-    
+
     /**
      * @Route("/dictionary/{module}/duplicate/{id}", name="admin.dictionary.duplicate")
      */
