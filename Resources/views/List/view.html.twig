@@ -55,36 +55,83 @@
 
     {% block javascripts %}
         {{ parent() }}
-        <script>
-            var $collectionHolder;
-            var $addTagLink = $('.add-attribute-handler');
-            if ($addTagLink.length) {
-                var $newLinkLi = $('<li class="list-group-item"></li>').append($addTagLink);
 
-                jQuery(document).ready(function () {
-                    $collectionHolder = $('ul.tags');
-                    $collectionHolder.append($newLinkLi);
-                    $collectionHolder.data('index', $collectionHolder.find('.list-group-item').length);
-                    $addTagLink.on('click', function (e) {
-                        e.preventDefault();
-                        addObjectForm($collectionHolder, $newLinkLi);
+
+
+        <script>
+            $(function(){
+                var $attributeCollection = $('.list-group.attribute-list');
+                var $blockInput = $('#blocks-serialized');
+                var $blocksForm = $('#form-list-view');
+
+                $('.add-attribute-handler').find('a').click(function(e){
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: '/app_dev.php/cms/get-attribute-form',
+                        dataType: 'html',
+                        data: {
+                            type: $(this).data('type')
+                        }
+                    }).success(function(response){
+                        $attributeCollection.append(response);
                     });
                 });
 
-                $('.delete-attribute-handler').on("click", function (event) {
-                    $(event.currentTarget).closest('.list-group-item').remove();
+                $(document).on('click', '.delete-attribute-handler', function(e){
+                    $(this).closest('.list-group-item').remove();
+                    e.preventDefault();
                 });
 
-                function addObjectForm($collectionHolder, $newLinkLi) {
-                    var prototype = $collectionHolder.data('prototype');
-                    var index     = $collectionHolder.data('index');
-                    var newForm   = prototype.replace(/__name__/g, index);
-                    $collectionHolder.data('index', index + 1);
+                $blocksForm.on('submit', function(e) {
+                    var blocks = [];
 
-                    var $newFormLi = $('<li class="list-group-item"></li>').append(newForm);
-                    $newLinkLi.before($newFormLi);
-                }
-            }
+                    $attributeCollection.find('.list-group-item.attribute-item').each(function(){
+                        var blockItem = {};
+
+                        $(this).find('input').each(function(){
+                            var $value = $(this).val();
+                            if($(this).attr('type') == 'checkbox'){
+                                $value = $(this).is(':checked');
+                            }
+
+                            blockItem[$(this).attr('name')] = $value;
+                        });
+
+                        blocks.push(blockItem)
+                    });
+
+                    $blockInput.val(JSON.stringify(blocks));
+                });
+            });
+
+            {#var $collectionHolder;#}
+            {#var $addTagLink = $('.add-attribute-handler');#}
+            {#if ($addTagLink.length) {#}
+                {#var $newLinkLi = $('<li class="list-group-item"></li>').append($addTagLink);#}
+
+                {#jQuery(document).ready(function () {#}
+                    {#$collectionHolder = $('ul.tags');#}
+                    {#$collectionHolder.append($newLinkLi);#}
+                    {#$collectionHolder.data('index', $collectionHolder.find('.list-group-item').length);#}
+                    {#$addTagLink.on('click', function (e) {#}
+                        {#e.preventDefault();#}
+                        {#addObjectForm($collectionHolder, $newLinkLi);#}
+                    {#});#}
+                {#});#}
+
+
+
+                {#function addObjectForm($collectionHolder, $newLinkLi) {#}
+                    {#var prototype = $collectionHolder.data('prototype');#}
+                    {#var index     = $collectionHolder.data('index');#}
+                    {#var newForm   = prototype.replace(/__name__/g, index);#}
+                    {#$collectionHolder.data('index', index + 1);#}
+
+                    {#var $newFormLi = $('<li class="list-group-item"></li>').append(newForm);#}
+                    {#$newLinkLi.before($newFormLi);#}
+                {#}#}
+            {#}#}
 
         </script>
     {% endblock %}

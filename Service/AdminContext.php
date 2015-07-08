@@ -97,7 +97,12 @@ class AdminContext
         if (!$key) {
             $this->_modules[$moduleName] = $structure;
         } else {
-            $this->_modules[$moduleName][$key] = array_merge($this->_modules[$moduleName][$key], $structure);
+            if (array_key_exists($key, $this->_modules[$moduleName])) {
+                $this->_modules[$moduleName][$key] = array_merge($this->_modules[$moduleName][$key], $structure);
+            }else{
+                $this->_modules[$moduleName][$key] = $structure;
+            }
+
         }
     }
 

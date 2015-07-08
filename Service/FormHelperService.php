@@ -115,8 +115,8 @@ class FormHelperService extends ContainerAware {
                 break;
             case 'file':
                 $options = array_merge(array(
-                    'entity_class' => 'Youshido\\Bundle\\CMSBundle\\Structure\\Attribute\\FileAttribute',
-                    'entity_property' => 'value'
+                    'entity_class' => !empty($info['entity']) ? $info['entity'] : null,
+                    'entity_property' => !empty($info['entity_property']) ? $info['entity_property'] : $column
                 ), $options);
 
                 $formBuilder->add($column, 'youshido_file', $options);
@@ -124,8 +124,8 @@ class FormHelperService extends ContainerAware {
             case 'image':
                 $options = array_merge(array(
                     'required' => false,
-                    'entity_class' => 'Youshido\\Bundle\\CMSBundle\\Structure\\Attribute\\ImageAttribute',
-                    'entity_property' => 'value'
+                    'entity_class' => !empty($info['entity']) ? $info['entity'] : null,
+                    'entity_property' => !empty($info['entity_property']) ? $info['entity_property'] :  $column
                 ), $options);
 
                 $formBuilder->add($column, 'youshido_file', $options);

@@ -8,8 +8,8 @@
 
     {% set path = false %}
 
-    {% if info.imagePath is defined %}
-        {% set path = info.imagePath %}
+    {% if attribute(object, column) %}
+        {% set path = attribute(object, column) %}
     {% elseif info.value is defined %}
         {% set path = attribute(info, 'value') %}
     {% endif %}
