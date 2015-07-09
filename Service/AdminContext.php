@@ -11,9 +11,14 @@ namespace Youshido\AdminBundle\Service;
 
 use Doctrine\Common\Util\Inflector;
 use Symfony\Bridge\Doctrine\Form\DoctrineOrmTypeGuesser;
+use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Yaml;
 
 class AdminContext
@@ -29,20 +34,32 @@ class AdminContext
     public function __construct(ContainerInterface $container = null)
     {
         $this->_container = $container;
-
-        $locator       = new FileLocator([$container->get('kernel')->getRootDir() . '/config/admin/']);
-        $configPath    = $locator->locate('structure.yml');
-        $this->_config = Yaml::parse(file_get_contents($configPath));
-        if (!empty($this->_config['imports'])) {
-            foreach ($this->_config['imports'] as $info) {
-                $configPath    = $locator->locate($info['resource']);
-                $this->_config = array_merge_recursive($this->_config, Yaml::parse(file_get_contents($configPath)));
-            }
-            unset($this->_config['imports']);
-        }
         $this->_guesser = new DoctrineOrmTypeGuesser($this->_container->get('doctrine'));
-        //throw new \Exception();
-        //$this->initialize();
+
+        $cachePath = $container->getParameter('kernel.cache_dir').'/AdminCache.php';
+        $userMatcherCache = new ConfigCache($cachePath, true);
+
+        if (!$userMatcherCache->isFresh()) {
+            $ymlParser = new Parser();
+
+            $finder = new Finder();
+            $finder->files()->in(sprintf('%s/config/admin/', $container->getParameter('kernel.root_dir')));
+
+            $config = [];
+            $resources = [];
+            foreach($finder as $file){
+                /** @var SplFileInfo $file */
+                $path = $file->getRealPath();
+
+                $config = array_merge_recursive($config, $ymlParser->parse(file_get_contents($path)));
+
+                $resources[] = new FileResource($path);
+            }
+
+            $userMatcherCache->write(sprintf('<?php return %s;', var_export($config, true)), $resources);
+        }
+
+        $this->_config = require $cachePath;
     }
 
     protected function initialize()
