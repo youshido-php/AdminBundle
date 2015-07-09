@@ -59,6 +59,10 @@ class FormHelperService extends ContainerAware {
             $options['required'] = (bool) $info['required'];
         }
 
+        if(array_key_exists('description', $info) && $info['description']){
+            $options['attr']['help'] = $info['description'];
+        }
+
         switch ($info['type']) {
             case 'date':
                 //$transformer = new DateTimeToStringTransformer();

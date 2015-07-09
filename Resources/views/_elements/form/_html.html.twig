@@ -6,6 +6,12 @@
         <div id="{{ form[column].vars.id }}-editor" style="position: absolute; top:0; left: 0; right: 0; bottom:0;">{{ form[column].vars.value }} </div>
     </div>
 
+    {% if form[column].vars.attr.help is defined %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ form[column].vars.attr.help }}</p>
+        </span>
+    {% endif %}
+
     <script>
         var editor = ace.edit("{{ form[column].vars.id }}-editor");
         editor.setTheme("ace/theme/monokai");

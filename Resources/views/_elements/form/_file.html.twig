@@ -1,6 +1,11 @@
-{#{{ dump(column, form) }}#}
 {{ form_label(form[column], null, { 'label_attr' : { 'class' : 'col-md-2 control-label' } }) }}
 <div class="col-md-8">
+    {% set path = attribute(info, 'value') %}
+    {% if path is defined %}
+        <a href="{{ path }}" target="_blank">view file</a>
+    {% else %}
+        <small>no file</small>
+    {% endif %}
     {{ form_widget(form[column]) }}
 
     {% if form[column].vars.attr.help is defined %}

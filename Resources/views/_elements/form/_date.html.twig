@@ -1,11 +1,12 @@
 {{ form_label(form[column], null, { 'label_attr' : { 'class' : 'col-md-2 control-label' } }) }}
 <div class="col-md-8">
-    {% if info.descrition is defined %}
+    {{ form_widget(form[column]) }}
+
+    {% if form[column].vars.attr.help is defined %}
         <span class="help-block mt5">
-            <i class="fa fa-info"></i>{{ info.description }}
+            <p class="help-block">{{ form[column].vars.attr.help }}</p>
         </span>
     {% endif %}
-    {{ form_widget(form[column]) }}
 </div>
 <script>
     $(document).ready(function() {
