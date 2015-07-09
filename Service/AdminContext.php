@@ -40,20 +40,22 @@ class AdminContext
         $userMatcherCache = new ConfigCache($cachePath, true);
 
         if (!$userMatcherCache->isFresh()) {
-            $ymlParser = new Parser();
+            $locator       = new FileLocator([$container->get('kernel')->getRootDir() . '/config/admin']);
+            $configPath    = $locator->locate('structure.yml');
 
-            $finder = new Finder();
-            $finder->files()->in(sprintf('%s/config/admin/', $container->getParameter('kernel.root_dir')));
-
-            $config = [];
             $resources = [];
-            foreach($finder as $file){
-                /** @var SplFileInfo $file */
-                $path = $file->getRealPath();
 
-                $config = array_merge_recursive($config, $ymlParser->parse(file_get_contents($path)));
+            $resources[] = new FileResource($configPath);
+            $config = Yaml::parse(file_get_contents($configPath));
 
-                $resources[] = new FileResource($path);
+            if (!empty($config['imports'])) {
+                foreach ($config['imports'] as $info) {
+                    $configPath    = $locator->locate($info['resource']);
+                    $resources[] = new FileResource($configPath);
+
+                    $config = array_merge_recursive($config, Yaml::parse(file_get_contents($configPath)));
+                }
+                unset($config['imports']);
             }
 
             $userMatcherCache->write(sprintf('<?php return %s;', var_export($config, true)), $resources);
