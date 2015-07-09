@@ -67,6 +67,7 @@ class BaseEntityController extends Controller
         return $this->render($template, [
             'objects'      => $paginator,
             'moduleConfig' => $moduleConfig,
+            'action'       => 'default',
             'filters'      => $filterForm->createView(),
             'pager'        => [
                 'currentPage' => $pageNumber,

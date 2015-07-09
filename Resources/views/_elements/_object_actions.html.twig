@@ -2,7 +2,7 @@
     {% if actionName not in ["default", "add", "dashboard", "export"] %}
         <a href="{{ path(actionInfo.route, {'id' : object.id, 'module': tableConfig.name }) }}"
            type="button" class="btn btn-rounded btn-link w70 btn-sm">
-            <i class="fa fa-{{ actionName }}"></i>
+            <i class="{% if actionInfo.icon is defined %}{{ actionInfo.icon }}{% else %}fa fa-{{ actionName }}{% endif %}"></i>
             {{ actionInfo.title }}
         </a>
     {% endif %}
