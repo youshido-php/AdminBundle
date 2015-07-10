@@ -89,13 +89,27 @@
                     $attributeCollection.find('.list-group-item.attribute-item').each(function(){
                         var blockItem = {};
 
-                        $(this).find('input').each(function(){
-                            var $value = $(this).val();
-                            if($(this).attr('type') == 'checkbox'){
-                                $value = $(this).is(':checked');
-                            }
+                        $(this).find('input, select, textarea').each(function(){
+                            if($(this).closest('.type-options').length){
+                                if(!$(this).closest('.type-options').hasClass('ignore')){
+                                    var $value = getValueOfItem(this);
+                                    var $key = $(this).attr('name');
 
-                            blockItem[$(this).attr('name')] = $value;
+                                    if($key.indexOf('[]', this.length - '[]'.length) !== -1){
+                                        $key = $key.substr(0, $key.length - '[]'.length);
+
+                                        if(!blockItem.hasOwnProperty($key)){
+                                            blockItem[$key] = [];
+                                        }
+
+                                        blockItem[$key].push($value);
+                                    }else{
+                                        blockItem[$key] = $value;
+                                    }
+                                }
+                            }else{
+                                blockItem[$(this).attr('name')] = getValueOfItem(this);
+                            }
                         });
 
                         blocks.push(blockItem)
@@ -103,35 +117,37 @@
 
                     $blockInput.val(JSON.stringify(blocks));
                 });
+
+                function getValueOfItem(el)
+                {
+                    var $value = $(el).val();
+                    if($(this).attr('type') == 'checkbox'){
+                        $value = $(el).is(':checked');
+                    }
+
+                    return $value;
+                }
+
+                $(document).on('change', '.change-attribute-type-handler', function(){
+                    var $value =  $(this).val();
+                    var $parent = $(this).closest('.list-group-item');
+
+                    $parent.find('.type-options').addClass('ignore').hide();
+                    $parent.find('.type-options[data-type=' + $value + ']').removeClass('ignore').show();
+                });
+
+                $(document).on('click', '.remove-row-handler', function(){
+                    $(this).closest('.item-row').remove();
+                });
+
+                $(document).on('click', '.add-row-handler', function(){
+                    $(this).closest('.form-group').find('.row-items').append('<div class="item-row">' +
+                            '<input type="text" name="config[items][key][]">' +
+                            '<input type="text" name="config[items][value][]">' +
+                            '<span class="remove-row-handler">x</span>' +
+                            '</div>');
+                });
             });
-
-            {#var $collectionHolder;#}
-            {#var $addTagLink = $('.add-attribute-handler');#}
-            {#if ($addTagLink.length) {#}
-                {#var $newLinkLi = $('<li class="list-group-item"></li>').append($addTagLink);#}
-
-                {#jQuery(document).ready(function () {#}
-                    {#$collectionHolder = $('ul.tags');#}
-                    {#$collectionHolder.append($newLinkLi);#}
-                    {#$collectionHolder.data('index', $collectionHolder.find('.list-group-item').length);#}
-                    {#$addTagLink.on('click', function (e) {#}
-                        {#e.preventDefault();#}
-                        {#addObjectForm($collectionHolder, $newLinkLi);#}
-                    {#});#}
-                {#});#}
-
-
-
-                {#function addObjectForm($collectionHolder, $newLinkLi) {#}
-                    {#var prototype = $collectionHolder.data('prototype');#}
-                    {#var index     = $collectionHolder.data('index');#}
-                    {#var newForm   = prototype.replace(/__name__/g, index);#}
-                    {#$collectionHolder.data('index', index + 1);#}
-
-                    {#var $newFormLi = $('<li class="list-group-item"></li>').append(newForm);#}
-                    {#$newLinkLi.before($newFormLi);#}
-                {#}#}
-            {#}#}
 
         </script>
     {% endblock %}
