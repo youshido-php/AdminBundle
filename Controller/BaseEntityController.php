@@ -61,6 +61,11 @@ class BaseEntityController extends Controller
             $qb->where($moduleConfig['where']);
         }
 
+        if(!empty($moduleConfig['actions']['default']['handler'])){
+            $handler = $moduleConfig['actions']['default']['handler'];
+            $qb = $this->get($handler['service'])->$handler['method']($qb);
+        }
+
         $perPageCount = 20;
         $paginator    = $this->getPaginated($qb, $pageNumber, $perPageCount);
         $template     = empty($moduleConfig['actions']['default']['template']) ? '@YAdmin/List/default.html.twig' : $moduleConfig['actions']['default']['template'];
@@ -186,10 +191,6 @@ class BaseEntityController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($object);
         $em->flush();
-        //if (FileManager::processFiles($object, "form")) {
-        //    $em->persist($object);
-        //    $em->flush();
-        //}
     }
 
     protected function buildForm($object, $config)

@@ -2,6 +2,7 @@
 
 namespace Youshido\AdminBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
@@ -213,7 +214,7 @@ class AdminUser implements AdvancedUserInterface, \Serializable
      */
     public function __construct()
     {
-        $this->rights = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->rights = new ArrayCollection();
     }
 
     /**
@@ -225,6 +226,19 @@ class AdminUser implements AdvancedUserInterface, \Serializable
     public function addRight(AdminRight $rights)
     {
         $this->rights[] = $rights;
+
+        return $this;
+    }
+
+    /**
+     * Set rights
+     *
+     * @param AdminRight[] $rights
+     * @return AdminUser
+     */
+    public function setRights($rights)
+    {
+        $this->rights = $rights;
 
         return $this;
     }

@@ -30,7 +30,8 @@ class AdminRight {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -68,4 +69,8 @@ class AdminRight {
         return $this;
     }
 
+    public function __toString()
+    {
+        return $this->title ?: '';
+    }
 }

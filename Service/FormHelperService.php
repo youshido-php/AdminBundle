@@ -82,10 +82,20 @@ class FormHelperService extends ContainerAware {
                     'label' => $info['title']
                 ), $options);
 
-                if (!empty($info['where'])) {
+                if (!empty($info['where']) || !empty($info['handler'])) {
                     $options['query_builder'] = function (EntityRepository $er) use ($info) {
-                        return $er->createQueryBuilder('m')
-                            ->where($info['where']);
+                        $queryBuilder = $er->createQueryBuilder('m');
+
+                        if(!empty($info['where'])){
+                            $queryBuilder
+                                ->where($info['where']);
+                        }
+
+                        if(!empty($info['handler'])){
+                            $this->container->get($info['handler']['service'])->$info['handler']['method']($queryBuilder);
+                        }
+
+                        return $er;
                     };
                 }
                 if (!empty($info['required'])) {

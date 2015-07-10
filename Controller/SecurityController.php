@@ -5,6 +5,9 @@ namespace Youshido\AdminBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Youshido\AdminBundle\Entity\AdminUser;
 
 class SecurityController extends Controller {
     /**
@@ -48,6 +51,60 @@ class SecurityController extends Controller {
      */
     public function logoutAction() {
 
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     *
+     * @Route("/user/new", name="admin.user.new")
+     */
+    public function newUserAction(Request $request)
+    {
+        $adminContext = $this->get('adminContext');
+        $config = $adminContext->getActiveModuleForAction('add');
+
+        $user = new $config['entity']();
+        $user->setIsActive(true);
+
+        $form = $this->createFormBuilder($user, [
+            'action' => $this->generateUrl('admin.user.new'),
+            'attr' => ['class' => 'form-horizontal']
+        ])
+            ->add('login', null, ['attr' => ['class' => 'form-control']])
+            ->add('isActive', null, ['attr' => ['class' => 'form-control'], 'required' => false])
+            ->add('password', 'repeated', array(
+                'type' => 'password',
+                'invalid_message' => 'The password fields must match.',
+                'options' => array('attr' => array('class' => 'form-control')),
+                'required' => true,
+                'first_options'  => array('label' => 'Password'),
+                'second_options' => array('label' => 'Repeat Password'),
+            ))
+            ->add('rights', null, ['attr' => ['style' => 'width: 400px;']])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if($form->isValid()){
+            $password = $this->get('security.encoder_factory')->getEncoder($user)->encodePassword($user->getPassword(), $user->getSalt());
+            $user->setPassword($password);
+
+            $m = $this->get('doctrine')->getManager();
+
+            $m->persist($user);
+            $m->flush();
+
+            $this->redirectToRoute('admin.dictionary.default', ['module' => 'admin-users']);
+        }
+
+        $vars = [
+            'object'       => $user,
+            'moduleConfig' => $this->get('adminContext')->getActiveModuleForAction('create'),
+            'form'         => $form->createView(),
+        ];
+
+        return $this->render('@YAdmin/Security/new_user.html.twig', $vars);
     }
 
 }

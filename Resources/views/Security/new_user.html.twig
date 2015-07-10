@@ -1,0 +1,76 @@
+{% extends '@YAdmin/_layout.html.twig' %}
+
+{% form_theme form _self %}
+
+{%- block form_row -%}
+    <div class="form-group">
+        {{- form_label(form) -}}
+        {{- form_errors(form) -}}
+        <div class="col-md-8">
+            {{- form_widget(form) -}}
+        </div>
+    </div>
+{%- endblock form_row -%}
+
+{%- block form_label -%}
+    {% set label_attr = label_attr|merge({class : 'col-md-2 control-label'}) %}
+
+    {% if label is not sameas(false) -%}
+        {% if not compound -%}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {%- endif %}
+        {% if required -%}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+        {%- endif %}
+        {% if label is empty -%}
+            {%- if label_format is not empty -%}
+                {% set label = label_format|replace({
+                    '%name%': name,
+                    '%id%': id,
+                }) %}
+            {%- else -%}
+                {% set label = name|humanize %}
+            {%- endif -%}
+        {%- endif -%}
+        <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ label|trans({}, translation_domain) }}</label>
+    {%- endif -%}
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="panel">
+                {{ form_start(form) }}
+
+                    <div class="panel-heading">
+                        <ul class="nav panel-tabs-border panel-tabs panel-tabs-left">
+                            <span class="panel-title">New Admin User</span>
+                        </ul>
+                    </div>
+
+                    <div class="panel-body">
+                        <div class="tab-content pn br-n">
+                            {{ form_rest(form) }}
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <button class="btn btn-rounded btn-default btn-block button-back-handler pull-right" style="max-width: 100px;">
+                                    <i class="fa fa-arrow-left"></i> Back
+                                </button>
+                            </div>
+                            <div class="col-md-8">
+                                <button type="submit" class="btn btn-rounded btn-primary btn-block light" style="max-width: 130px;">
+                                    <i class="fa fa-save"></i> Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                {{ form_end(form) }}
+        </div>
+
+    </div>
+
+{% endblock %}

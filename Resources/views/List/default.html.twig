@@ -35,6 +35,14 @@
                             href="{{ path(moduleConfig.actions.export.route, { 'module': adminContext.activeModule.name }) }}">
                         <i class="fa fa-file-excel-o pr5"></i>Export</a>
                 {% endif %}
+
+                {% if moduleConfig.header_actions is defined %}
+                    {% for headerActionName, headerActionConf in moduleConfig.header_actions %}
+                        <a class="btn btn-primary light btn-sm btn-rounded fw600 ml10 w100" href="{{ path(headerActionConf.route) }}">
+                            <i class="{{ headerActionConf.icon is defined ? headerActionConf.icon : '' }}"></i>{{ headerActionConf.title is defined ? headerActionConf.title : headerActionName|capitalize }}
+                        </a>
+                    {% endfor %}
+                {% endif %}
             </span>
         </div>
         <div class="panel-body pn">

@@ -142,11 +142,18 @@ class AdminContext
 
     public function isGranted($roles)
     {
-        $granted = $this->getToken()->getUser()->getRoles();
-        if (in_array('ROLE_ROOT', $granted)) return true;
-        foreach ((array)$roles as $role) {
-            if (!in_array($role, $granted)) return false;
+        if(is_array($roles)){
+            foreach($roles as $role){
+                if (!$this->get('security.authorization_checker')->isGranted($role)) {
+                    return false;
+                }
+            }
+        }else{
+            if (!$this->get('security.authorization_checker')->isGranted($roles)) {
+                return false;
+            }
         }
+
         return true;
     }
 
