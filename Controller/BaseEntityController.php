@@ -18,6 +18,7 @@ use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransf
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class BaseEntityController extends Controller
 {
@@ -62,8 +63,11 @@ class BaseEntityController extends Controller
         }
 
         if(!empty($moduleConfig['actions']['default']['handler'])){
-            $handler = $moduleConfig['actions']['default']['handler'];
-            $qb = $this->get($handler['service'])->$handler['method']($qb);
+            $handlers = (array) $moduleConfig['actions']['default']['handler'];
+
+            foreach($handlers as $handler){
+                $qb = $this->get('adminContext')->prepareService($handler[0])->$handler[1]($qb);
+            }
         }
 
         $perPageCount = 20;
@@ -113,12 +117,19 @@ class BaseEntityController extends Controller
         }
 
         if (!$object) $object = $this->getOrCreateObjectFromRequest($request);
-        $vars = $object ? $this->callHandlersWithParams('load', [$object, $request]) : [];
+
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction($actionName);
 
+        if (!$this->get('admin.security')
+            ->isGranted($object, $moduleConfig, $actionName)
+        ) {
+            throw new AccessDeniedException();
+        }
 
+        $vars = $object ? $this->callHandlersWithParams('load', [$object, $request]) : [];
         $form = $this->buildForm($object, $moduleConfig);
         $form->handleRequest($request);
+
         if ($form->isSubmitted()) {
             $this->callHandlersWithParams('validate', [$object, $request]);
             if ($form->isValid()) {
@@ -258,5 +269,4 @@ class BaseEntityController extends Controller
 
         return new Paginator($query);
     }
-
 }

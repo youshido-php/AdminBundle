@@ -13,6 +13,11 @@ services:
       calls:
           - [setContainer, [@service_container] ]
 
+  admin.security:
+      class: Youshido\AdminBundle\Service\Security
+      calls:
+          - [setContainer, [@service_container] ]
+
   admin.twig_extension:
       class: Youshido\AdminBundle\Twig\AdminExtension
       public: true

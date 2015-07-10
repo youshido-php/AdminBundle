@@ -248,9 +248,13 @@ class AdminContext
         }
         foreach ($config['actions'] as $key => $info) {
             $params = is_array($info) ? $info : array();
-            if (!empty($params['security']) && !$this->isGranted($params['security'])) {
-                unset($config['actions'][$key]);
-                continue;
+
+            if (!empty($params['security']) && !empty($params['security']['roles'])) {
+                if(!$this->get('admin.security')->checkRoles($params['security']['roles'])){
+                    unset($config['actions'][$key]);
+
+                    continue;
+                }
             }
             if (empty($params['route'])) {
                 $params['route'] = is_string($info) ? $info : 'admin.' . $config['type'] . '.' . $key;
@@ -276,5 +280,10 @@ class AdminContext
     protected function get($id)
     {
         return $this->_container->get($id);
+    }
+
+    public function prepareService($service)
+    {
+        return $this->get(str_replace('@', '', $service));
     }
 }

@@ -92,10 +92,15 @@ class FormHelperService extends ContainerAware {
                         }
 
                         if(!empty($info['handler'])){
-                            $this->container->get($info['handler']['service'])->$info['handler']['method']($queryBuilder);
+                            $handlers = (array) $info['handler'];
+
+                            foreach($handlers as $handler){
+                                $queryBuilder = $this->container->get('adminContext')
+                                    ->prepareService($handler[0])->$handler[1]($queryBuilder);
+                            }
                         }
 
-                        return $er;
+                        return $queryBuilder;
                     };
                 }
                 if (!empty($info['required'])) {
