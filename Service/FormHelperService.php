@@ -58,6 +58,9 @@ class FormHelperService extends ContainerAware {
         if (array_key_exists('required', $info)){
             $options['required'] = (bool) $info['required'];
         }
+        if (array_key_exists('readonly', $info)){
+            $options['read_only'] = (bool) $info['readonly'];
+        }
 
         if(array_key_exists('description', $info) && $info['description']){
             $options['attr']['help'] = $info['description'];
