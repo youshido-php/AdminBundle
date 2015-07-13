@@ -15,8 +15,7 @@ use Youshido\CMSBundle\Structure\Attribute\AttributedTrait;
 class DictionaryController extends BaseEntityController {
 
     /**
-     * @Route("/dictionary/{module}", name="admin.dictionary.default")
-     * @Route("/dictionary/{module}/page/{pageNumber}", name="admin.dictionary.page")
+     * @Route("/dictionary/{module}/{pageNumber}", name="admin.dictionary.default")
      */
     public function defaultAction(Request $request, $module, $pageNumber = 1) {
         return parent::defaultAction($request, $module, $pageNumber);

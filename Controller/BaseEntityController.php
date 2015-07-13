@@ -80,7 +80,8 @@ class BaseEntityController extends Controller
             'filters'      => $filterForm->createView(),
             'pager'        => [
                 'currentPage' => $pageNumber,
-                'link'        => 'dictionary/' . $moduleConfig['name'] . '/',
+                'route'       => $request->get('_route'),
+                'parameters'  => $request->attributes->get('_route_params'),
                 'pagesCount'  => ceil(count($paginator) / $perPageCount),
             ],
         ]);
