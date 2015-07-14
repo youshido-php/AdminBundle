@@ -40,7 +40,7 @@ class FormHelperService extends ContainerAware {
     {
         $options = array('attr' => array('class' => '', 'autocomplete' => 'off'));
 
-        if ($info['type'] == 'text') {
+        if (in_array($info['type'], ['text', 'integer'])) {
             $options['attr']['class'] = 'form-control';
         } elseif ($info['type'] == 'entity') {
             $options['attr']['class'] = 'form-control';
@@ -160,6 +160,9 @@ class FormHelperService extends ContainerAware {
                 break;
             case 'choice':
 
+                break;
+            case 'integer':
+                $formBuilder->add($column, 'integer', $options);
                 break;
             default:
                 $formBuilder->add($column, 'text', $options);
