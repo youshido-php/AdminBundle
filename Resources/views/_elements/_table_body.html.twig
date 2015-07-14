@@ -6,6 +6,8 @@
                     {% set columnInfo = tableConfig.columns[columnName] %}
                 {% elseif tableConfig.submodules[columnName] is defined %}
                     {% set columnInfo = tableConfig.submodules[columnName] %}
+                {% elseif tableConfig.subviews[columnName] is defined  %}
+                    {% set columnInfo = tableConfig.subviews[columnName] %}
                 {% else %}
                     {% set columnInfo = false %}
                 {% endif %}
@@ -76,6 +78,9 @@
                             {{ columnInfo.title is defined ? columnInfo.title : columnName|capitalize }}
                         </a>
                     </td>
+                {% elseif tableConfig.subviews[columnName] is defined %}
+                    {% set columnInfo = tableConfig.subviews[columnName] %}
+                    {{ include(columnInfo.template) }}
                 {% endif %}
             {% endfor %}
 
