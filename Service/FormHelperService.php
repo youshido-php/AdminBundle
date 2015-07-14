@@ -159,7 +159,13 @@ class FormHelperService extends ContainerAware {
                 $formBuilder->add($column, 'hidden', $options);
                 break;
             case 'choice':
+                $options['choices'] = $info['choices'];
 
+                if (!empty($info['multiple'])) {
+                    $options['multiple'] = true;
+                }
+
+                $formBuilder->add($column, 'choice', $options);
                 break;
             case 'integer':
                 $formBuilder->add($column, 'integer', $options);
