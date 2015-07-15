@@ -29,7 +29,14 @@
                     </li>
                 {% elseif item.group is not defined %}
                     <li {% if item.isActive is defined %} class="active"{% endif %}>
-                        <a href="{{ item.link }}">
+
+                        {% if item.route is defined %}
+                            {% set href = path(item.route) %}
+                        {% elseif item.link is defined %}
+                            {% set href = item.link %}
+                        {% endif %}
+
+                        <a href="{{ href }}">
                             <span class="{{ item.icon|default("fa fa-angle-right") }}" style="font-size: 15px;"></span>
                             <span class="sidebar-title">{{ item.title }}</span>
                         </a>
