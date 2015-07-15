@@ -56,9 +56,11 @@
                                     <a href="javascript:window.history.back();">&lt; Go back</a>
                                 </li>
                             {% else %}
-                                <li class="crumb-active">
-                                    <a href="{{ path('admin.dashboard') }}">Dashboard</a>
-                                </li>
+                                {% if(routeExist('admin.dashboard')) %}
+                                    <li class="crumb-active">
+                                        <a href="{{ path('admin.dashboard') }}">Dashboard</a>
+                                    </li>
+                                {% endif %}
                                 {% if adminContext.activeModule.name != "dashboard" %}
                                     {% if object is not defined %}
                                         <li class="crumb-trail">
