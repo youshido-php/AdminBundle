@@ -16,7 +16,7 @@
 
     {% if path is not empty %}
         {% set path = "/" ~ path %}
-        <img src="{{ path }}" style="width: 100px;"/><br/>
+        <img src="{{ path }}" style="width: 100px; background: repeat url('/bundles/yadmin/assets/assets/img/stock/bg-image.jpg')"/><br/>
         {#<img src="{{ path | imagine_filter('preview_100') }}"/>#}
         <a href="{{ path("admin.deleteAttributeFile", {
             id: adminContext.currentObject.id,
