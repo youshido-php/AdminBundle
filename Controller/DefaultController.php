@@ -8,10 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Yaml\Yaml;
 
 class DefaultController extends Controller {
-    /**
-     * @Route("/", name="admin.homepage")
-     * @Route("/dashboard", name="admin.dashboard")
-     */
+
     public function indexAction() {
         $this->get('adminContext')->setActiveModuleName('dashboard');
 
