@@ -87,7 +87,7 @@ class FormHelperService extends ContainerAware {
 
                 if (!empty($info['where']) || !empty($info['handler'])) {
                     $options['query_builder'] = function (EntityRepository $er) use ($info) {
-                        $queryBuilder = $er->createQueryBuilder('m');
+                        $queryBuilder = $er->createQueryBuilder('t');
 
                         if(!empty($info['where'])){
                             $queryBuilder
