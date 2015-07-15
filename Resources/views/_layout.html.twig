@@ -107,7 +107,7 @@
         </div>
         {% for label, flashes in app.session.flashbag.all %}
         {% for flash in flashes %}
-        <div class="notification-handler" data-type="{{ label }}">{{ flash }}</div>
+        <div class="notification-handler" data-type="{{ label }}" data-style="{{ label }}">{{ flash }}</div>
         {% endfor %}
         {% endfor %}
         <script src="vendor/plugins/select2/select2.min.js"></script>

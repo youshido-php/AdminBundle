@@ -56,12 +56,13 @@ $(document).ready(function() {
     };
 
     $('.notification-handler').each(function(index, element) {
-        var noteStyle = "success";
+        element = $(element);
+
+        var noteStyle = element.data('style');
         var noteShadow = true;
         var noteOpacity = 1;
         var noteStack = "stack_top_right";
         //var noteStack = "stack_bar_top";
-        element = $(element);
 
         function findWidth() {
             if (noteStack == "stack_bar_top") {
