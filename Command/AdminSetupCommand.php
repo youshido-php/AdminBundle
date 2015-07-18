@@ -27,7 +27,7 @@ class AdminSetupCommand extends ContainerAwareCommand {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         $right = new AdminRight();
-        $right->setId('ROLE_ROOT');
+        $right->setId('ROLE_SUPER_ADMIN');
         $right->setTitle('Super Admin');
 
         $admin = new AdminUser();

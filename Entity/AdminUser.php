@@ -161,7 +161,7 @@ class AdminUser implements AdvancedUserInterface, \Serializable
 
     public function getRoles()
     {
-        $roles = array('ROLE_ADMIN');
+        $roles = array('ROLE_SUPER_ADMIN');
         foreach ($this->getRights() as $right) {
             $roles[] = $right->getId();
         }
