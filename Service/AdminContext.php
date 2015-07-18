@@ -77,6 +77,15 @@ class AdminContext
                         continue;
                     }
                 }
+
+                if (!empty($info['show_conditions'])) {
+                    foreach ($info['show_conditions'] as $showCondition) {
+                        if(!($this->prepareService($showCondition[0])->{$showCondition[1]}())){
+                            continue 2;
+                        }
+                    }
+                }
+
                 $this->_modules[$key] = $this->processModuleStructure($info, $key);
             }
 
