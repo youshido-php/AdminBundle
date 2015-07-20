@@ -226,9 +226,7 @@ class AdminContext
         if (empty($structure['title'])) $structure['title'] = ucfirst(Inflector::classify($key));
         if (empty($structure['entity'])) $structure['entity'] = 'AppBundle\Entity\\' . Inflector::classify($key);
         if (empty($structure['link']) && ($structure['type'] !== 'Group')) {
-            $structure['link'] = $this->_container->get('router')->generate('admin.'.$structure['type'].'.default', [
-                'module'    => $structure['name']
-            ]);
+            $structure['link'] = $this->generateModuleLink($structure['type'], $structure['name']);
         }
         if (empty($structure['tabs'])) $structure['tabs'] = [];
         if (!empty($structure['columns'])) {
@@ -284,6 +282,25 @@ class AdminContext
         }
         if (empty($columnInfo['title'])) $columnInfo['title'] = Inflector::classify($columnName);
         if (!array_key_exists('required', $columnInfo)) $columnInfo['required'] = true;
+    }
+
+    public function getBackUrl()
+    {
+        $module = $this->getActiveModule();
+
+        if(!empty($module['back_url_handler'])
+            && ($backUrl = $this->prepareService($module['back_url_handler'][0])->{$module['back_url_handler'][1]}())){
+            return $backUrl;
+        }else{
+           return $this->generateModuleLink($module['type'], $module['name']);
+        }
+    }
+
+    protected function generateModuleLink($type, $module)
+    {
+        return $this->_container->get('router')->generate('admin.'.$type.'.default', [
+            'module'    => $module
+        ]);
     }
 
     protected function get($id)

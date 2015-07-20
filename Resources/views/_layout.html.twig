@@ -53,7 +53,7 @@
                         <ol class="breadcrumb">
                             {% if adminContext.activeModule.nested is defined %}
                                 <li class="crumb-link">
-                                    <a href="javascript:window.history.back();">&lt; Go back</a>
+                                    <a href="{{ adminContext.getBackUrl() }}">&lt; Go back</a>
                                 </li>
                             {% else %}
                                 {% if(routeExist('admin.dashboard')) %}

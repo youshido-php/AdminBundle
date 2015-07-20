@@ -30,6 +30,7 @@ class BaseEntityController extends Controller
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('default');
 
         $filterData     = $this->getFilterData($request);
+        /** @var FormBuilder $filtersBuilder */
         $filtersBuilder = $this->get('form.factory')
             ->createNamedBuilder('filter', 'form', $filterData, ['method' => 'get', 'csrf_protection' => false, 'attr' => ['class' => 'form form-inline']]);
 
@@ -84,7 +85,7 @@ class BaseEntityController extends Controller
         }
 
         $perPageCount = 20;
-        $paginator    = $this->getPaginated($qb, $pageNumber, $perPageCount);
+        $paginator    = $this->getPaginated($qb, $this->getPage($request, $module), $perPageCount);
         $template     = empty($moduleConfig['actions']['default']['template']) ? '@YAdmin/List/default.html.twig' : $moduleConfig['actions']['default']['template'];
         return $this->render($template, [
             'objects'      => $paginator,
@@ -98,6 +99,23 @@ class BaseEntityController extends Controller
                 'pagesCount'  => ceil(count($paginator) / $perPageCount),
             ],
         ]);
+    }
+
+    protected function getPage(Request $request, $module)
+    {
+        $cacheKey = sprintf('admin_page_number_%s', $module);
+
+        if($pageNumber = $request->get('pageNumber', false)) {
+            $this->get('session')->set($cacheKey, $pageNumber);
+
+            return $pageNumber;
+        }else{
+            if($this->get('session')->has($cacheKey)){
+                return (int) $this->get('session')->get($cacheKey);
+            }
+        }
+
+        return 1;
     }
 
     protected function exportAction($moduleConfig, Request $request)
@@ -134,9 +152,7 @@ class BaseEntityController extends Controller
 
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction($actionName);
 
-        if (!$this->get('admin.security')
-            ->isGranted($object, $moduleConfig, $actionName)
-        ) {
+        if (!$this->get('admin.security')->isGranted($object, $moduleConfig, $actionName)) {
             throw new AccessDeniedException();
         }
 
@@ -154,7 +170,6 @@ class BaseEntityController extends Controller
                     return $this->get(substr($moduleConfig['handlers']['redirect'][0], 1))->$moduleConfig['handlers']['redirect'][1]($object);
                 } else {
                     return $this->redirectToRoute($moduleConfig['actions']['edit']['route'], ['module' => $moduleConfig['name'], 'id' => $object->getId()]);
-                    //return $this->redirectToRoute($moduleConfig['actions']['default']['route'], ['module' => $moduleConfig['name']]);
                 }
             } else {
                 dump($form->getErrorsAsString(), $request->get('form'));
@@ -167,6 +182,7 @@ class BaseEntityController extends Controller
             'moduleConfig' => $this->get('adminContext')->getActiveModuleForAction($actionName),
             'form'         => $form->createView(),
         ]);
+
         return $this->render('@YAdmin/List/view.html.twig', $vars);
     }
 
