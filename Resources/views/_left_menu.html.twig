@@ -20,7 +20,7 @@
                             {% for node in item.nodes %}
                                 {% if node.route is defined %}
                                     {% set href = path(node.route) %}
-                                {% elseif item.link is defined %}
+                                {% elseif node.link is defined %}
                                     {% set href = node.link %}
                                 {% endif %}
                                 <li{% if node.isActive is defined %} class="active"{% endif %}>
