@@ -19,6 +19,7 @@ use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Youshido\AdminBundle\Service\AdminContext;
 
 class BaseEntityController extends Controller
 {
@@ -43,11 +44,23 @@ class BaseEntityController extends Controller
         }
         $filterForm = $filtersBuilder->getForm();
 
+        if(!empty($filterData)){
+            $this->get('session')->set($this->getFilterCacheKey($module), $filterData);
+        }else{
+            if($this->get('session')->has($this->getFilterCacheKey($module))){
+                $filterData = $this->get('session')->get($this->getFilterCacheKey($module));
+                $filterForm->submit(array_map(function($el){
+                    return is_object($el) ? $el->getId() : $el;
+                }, (array) $filterData));
+            }
+        }
+
         /**
          * @var QueryBuilder $qb
          */
         $qb = $this->getDoctrine()->getManager()->createQueryBuilder();
         $qb->select('t')->from($moduleConfig['entity'], 't');
+
         if (!empty($filterData)) {
             foreach ($filterData as $key => $value) {
                 $qb->andWhere('t.' . $key . ' = :' . $key);
@@ -269,5 +282,10 @@ class BaseEntityController extends Controller
             ->setMaxResults($count);
 
         return new Paginator($query);
+    }
+
+    protected function getFilterCacheKey($module)
+    {
+        return sprintf('filers_%s', $module);
     }
 }
