@@ -18,43 +18,45 @@
     </div>
     {% endif %}
 
-    <div class="panel">
-        <div class="panel-heading clearfix">
-            <span class="panel-title">
-                <span class="fa fa-table"></span>
-                {{ tableTitle|default("Data") }}
-            </span>
-            <span class="pull-right">
-                {% if moduleConfig.actions.add is defined %}
-                    <a class="btn btn-primary light btn-sm btn-rounded fw600 ml10 w100"
-                            href="{{ path(moduleConfig.actions.add.route, { 'module': adminContext.activeModule.name }) }}">
-                        <i class="fa fa-plus pr5"></i>Add</a>
-                {% endif %}
-                {% if moduleConfig.actions.export is defined %}
-                    <a class="btn btn-primary light btn-sm btn-rounded fw600 ml10 w100"
-                            href="{{ path(moduleConfig.actions.export.route, { 'module': adminContext.activeModule.name }) }}">
-                        <i class="fa fa-file-excel-o pr5"></i>Export</a>
-                {% endif %}
+    {% block list_panel %}
+        <div class="panel">
+            <div class="panel-heading clearfix">
+                <span class="panel-title">
+                    <span class="fa fa-table"></span>
+                    {{ tableTitle|default("Data") }}
+                </span>
+                <span class="pull-right">
+                    {% if moduleConfig.actions.add is defined %}
+                        <a class="btn btn-primary light btn-sm btn-rounded fw600 ml10 w100"
+                                href="{{ path(moduleConfig.actions.add.route, { 'module': adminContext.activeModule.name }) }}">
+                            <i class="fa fa-plus pr5"></i>Add</a>
+                    {% endif %}
+                    {% if moduleConfig.actions.export is defined %}
+                        <a class="btn btn-primary light btn-sm btn-rounded fw600 ml10 w100"
+                                href="{{ path(moduleConfig.actions.export.route, { 'module': adminContext.activeModule.name }) }}">
+                            <i class="fa fa-file-excel-o pr5"></i>Export</a>
+                    {% endif %}
 
-                {% if moduleConfig.header_actions is defined %}
-                    {% for headerActionName, headerActionConf in moduleConfig.header_actions %}
-                        <a class="btn btn-primary light btn-sm btn-rounded fw600 ml10" href="{{ path(headerActionConf.route) }}">
-                            <i class="{{ headerActionConf.icon is defined ? headerActionConf.icon : '' }}"></i>{{ headerActionConf.title is defined ? headerActionConf.title : headerActionName|capitalize }}
-                        </a>
-                    {% endfor %}
-                {% endif %}
-            </span>
-        </div>
-        <div class="panel-body pn">
-            <div class="bs-component">
-                {{ include('@YAdmin/_elements/_table_body.html.twig', { tableConfig: moduleConfig, actions: moduleConfig.actions }) }}
+                    {% if moduleConfig.header_actions is defined %}
+                        {% for headerActionName, headerActionConf in moduleConfig.header_actions %}
+                            <a class="btn btn-primary light btn-sm btn-rounded fw600 ml10" href="{{ path(headerActionConf.route) }}">
+                                <i class="{{ headerActionConf.icon is defined ? headerActionConf.icon : '' }}"></i>{{ headerActionConf.title is defined ? headerActionConf.title : headerActionName|capitalize }}
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                </span>
             </div>
+            <div class="panel-body pn">
+                <div class="bs-component">
+                    {{ include('@YAdmin/_elements/_table_body.html.twig', { tableConfig: moduleConfig, actions: moduleConfig.actions }) }}
+                </div>
+            </div>
+            {% if pager.pagesCount and pager.pagesCount > 1 %}
+            <div class="panel-footer">
+                {{ include('@YAdmin/List/pager.html.twig') }}
+            </div>
+            {% endif %}
         </div>
-        {% if pager.pagesCount and pager.pagesCount > 1 %}
-        <div class="panel-footer">
-            {{ include('@YAdmin/List/pager.html.twig') }}
-        </div>
-        {% endif %}
-    </div>
+    {% endblock %}
 
 {% endblock %}
