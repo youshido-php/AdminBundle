@@ -71,18 +71,23 @@ class AdminContext
         if ($this->isAuthorized()) {
             foreach ($this->_config['modules'] as $key => $info) {
                 if (!empty($info['security'])) {
-                    $roles = explode(',', $info['security']);
+                    $security = (array) $info['security'];
+
+                    if(array_key_exists('conditions', $security)){
+                        foreach ($security['conditions'] as $showCondition) {
+                            if(!($this->prepareService($showCondition[0])->{$showCondition[1]}())){
+                                continue 2;
+                            }
+                        }
+
+                        $roles = array_key_exists('roles', $security) ? $security['roles'] : [];
+                    }else{
+                        $roles = $security;
+                    }
+
                     if (!$this->isGranted($roles)) {
                         unset($this->_config['modules'][$key]);
                         continue;
-                    }
-                }
-
-                if (!empty($info['show_conditions'])) {
-                    foreach ($info['show_conditions'] as $showCondition) {
-                        if(!($this->prepareService($showCondition[0])->{$showCondition[1]}())){
-                            continue 2;
-                        }
                     }
                 }
 
