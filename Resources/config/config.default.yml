@@ -1,0 +1,15 @@
+modules:
+
+  {key}:
+      title: {title}
+      type: {controller}
+      icon: imoon imoon-minus
+      entity: {entity}
+      columns:
+{columns}
+      actions:
+        default:
+          show: [{show}]
+        add: ~
+        edit: ~
+        remove: ~
