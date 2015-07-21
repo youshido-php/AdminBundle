@@ -17,7 +17,7 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="nav sub-nav">
-                            {% for node in item.nodes %}
+                            {% for node in item.nodes if node.private is not defined %}
                                 {% if node.route is defined %}
                                     {% set href = path(node.route) %}
                                 {% elseif node.link is defined %}
