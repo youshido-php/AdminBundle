@@ -7,20 +7,21 @@
 
 namespace Youshido\AdminBundle\Command;
 
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Symfony\Bridge\Doctrine\Form\DoctrineOrmTypeGuesser;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 class AdminGenerateCommand extends ContainerAwareCommand
 {
-
-    private $defaultConfigPath = '/../Resources/config/config.default.yml';
+    private $tabPrefix = '            ';
+    private $defaultConfigPath = 'Resources/config/config.default.yml';
+    /** @var  DoctrineOrmTypeGuesser */
+    private $guesser;
 
     protected function configure()
     {
@@ -34,6 +35,12 @@ class AdminGenerateCommand extends ContainerAwareCommand
             );
     }
 
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        $this->guesser = new DoctrineOrmTypeGuesser($this->getContainer()->get('doctrine'));
+    }
+
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $helper = $this->getHelper('question');
@@ -41,23 +48,23 @@ class AdminGenerateCommand extends ContainerAwareCommand
         /** @var ClassMetadata $metadata */
         $metadata = $this->getContainer()->get('doctrine')->getManager()->getClassMetadata($entity);
 
-        if($metadata){
+        if ($metadata) {
             $question = new Question('Please enter admin controller [dictionary]: ', 'dictionary');
             $controller = $helper->ask($input, $output, $question);
 
-            $key = str_replace('\\', '_', Inflector::tableize($metadata->getName()));
+            $key = Inflector::tableize($this->getEntityName($metadata));
             $question = new Question(sprintf('Please enter admin module key [%s]: ', $key), $key);
             $key = $helper->ask($input, $output, $question);
 
-            if($controller && $key){
+            if ($controller && $key) {
                 $content = $this->getConfigFileContent($metadata, $controller, $key);
 
                 $targetPath = $this->getContainer()->getParameter('kernel.root_dir')
-                    .sprintf('/config/admin/structure.%s.yml', $key);
+                    . sprintf('/config/admin/structure.%s.yml', $key);
 
-                if(file_put_contents($targetPath, $content)){
+                if (file_put_contents($targetPath, $content)) {
                     $output->writeln(sprintf('<fg=green>File was saved to \'%s\'</fg=green>', $targetPath));
-                }else{
+                } else {
                     $output->writeln('<error>Can\'t save file (check writes permissions)</error>');
                 }
             }
@@ -73,26 +80,72 @@ class AdminGenerateCommand extends ContainerAwareCommand
     private function getConfigFileContent($metadata, $controller, $key)
     {
         $listShowFields = [];
+        $actionHideFields = [];
         $columns = [];
 
-        foreach($metadata->getFieldNames() as $fieldName){
-            $columns[] = $fieldName;
+        foreach ($metadata->getFieldNames() as $fieldName) {
+            $columns[$fieldName] = [
+                'type' => $this->recognizeFieldType($metadata, $fieldName)
+            ];
 
-            if(!($metadata->isIdentifier($fieldName) && $metadata->idGenerator->isPostInsertGenerator())){
+            if (!($metadata->isIdentifier($fieldName) && $metadata->idGenerator->isPostInsertGenerator())) {
                 $listShowFields[] = $fieldName;
+            } else {
+                $actionHideFields[] = $fieldName;
             }
         }
 
-        $parts = explode('\\', $metadata->getName());
-        $title = Inflector::pluralize($parts[count($parts) - 1]);
+        foreach ($metadata->getAssociationMappings() as $field) {
+            $columns[$field['fieldName']] = [
+                'type' => 'entity',
+                'entity' => $field['targetEntity']
+            ];
+        }
 
-        return $this->generateConfig($key, $title, $controller, $metadata->getName(), $columns, $listShowFields);
+        $title = Inflector::pluralize($this->getEntityName($metadata));
+
+        return $this->generateConfig($key, $title, $controller, $metadata->getName(), $columns, $listShowFields, $actionHideFields);
     }
 
-
-    private function generateConfig($key, $title, $controller, $entity, $columns, $listShowFields)
+    /**
+     * @param $metadata ClassMetadata
+     * @return string
+     */
+    private function getEntityName($metadata)
     {
-        $configContent = file_get_contents(dirname('/Users/vasilportey/projects/jobrain-site/vendor/youshido/admin/Command/AdminGenerateCommand.php').$this->defaultConfigPath);
+        $parts = explode('\\', $metadata->getName());
+
+        return $parts[count($parts) - 1];
+    }
+
+    /**
+     * @param $metadata ClassMetadata
+     * @param $fieldName
+     * @return string
+     */
+    public function recognizeFieldType($metadata, $fieldName)
+    {
+        $guess = $this->guesser->guessType($metadata->getName(), $fieldName);
+        $type = $guess->getType();
+
+        return str_replace(['checkbox'], ['boolean'], $type);
+
+    }
+
+    private function generateConfig($key, $title, $controller, $entity, $columns, $listShowFields, $actionsHideFields)
+    {
+        $bundlePath = $this->getContainer()->getParameter('kernel.root_dir').'/../vendor/youshido/admin/';
+        $configContent = file_get_contents($bundlePath.$this->defaultConfigPath);
+
+        $columnsContent = '';
+        foreach($columns as $name => $options){
+            $columnsContent .= $this->formatColumn($name, $options);
+        }
+
+        $hideContent = '~';
+        if($actionsHideFields){
+            $hideContent = sprintf("\n%s    hide: [%s]", $this->tabPrefix, implode(', ', $actionsHideFields));
+        }
 
         return str_replace([
             '{key}',
@@ -101,14 +154,26 @@ class AdminGenerateCommand extends ContainerAwareCommand
             '{entity}',
             '{columns}',
             '{show}',
+            '{hide}'
         ], [
             $key,
             $title,
             $controller,
             $entity,
-            implode("\n", array_map(function($el){ return  sprintf('        %s: ~', $el); }, (array) $columns)),
-            implode(', ', $listShowFields)
-        ],$configContent);
+            $columnsContent,
+            implode(', ', $listShowFields),
+            $hideContent
+        ], $configContent);
     }
 
+    private function formatColumn($name, $options)
+    {
+
+        $optionsContent = '';
+        foreach($options as $key => $option){
+            $optionsContent .= sprintf("\n    %s%s: %s", $this->tabPrefix, $key, $option);
+        }
+
+        return sprintf("\n%s%s:%s", $this->tabPrefix, $name, $optionsContent);
+    }
 }
