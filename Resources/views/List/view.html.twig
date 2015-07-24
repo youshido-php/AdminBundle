@@ -121,7 +121,7 @@
                 function getValueOfItem(el)
                 {
                     var $value = $(el).val();
-                    if($(this).attr('type') == 'checkbox'){
+                    if($(el).attr('type') == 'checkbox'){
                         $value = $(el).is(':checked');
                     }
 
