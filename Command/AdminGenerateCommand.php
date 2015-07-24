@@ -88,6 +88,10 @@ class AdminGenerateCommand extends ContainerAwareCommand
                 'type' => $this->recognizeFieldType($metadata, $fieldName)
             ];
 
+            if($columns[$fieldName]['type'] == 'boolean'){
+                $columns[$fieldName]['required'] = 'false';
+            }
+
             if (!($metadata->isIdentifier($fieldName) && $metadata->idGenerator->isPostInsertGenerator())) {
                 $listShowFields[] = $fieldName;
             } else {
