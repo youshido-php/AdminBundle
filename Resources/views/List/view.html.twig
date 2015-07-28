@@ -20,15 +20,15 @@
         </div>
 
         <div class="panel-body">
-            {% block viewPanelBody %}
             <div class="tab-content pn br-n">
-                {% for tabAlias, tabOptions in moduleConfig.tabs %}
-                    <div id="{{ tabAlias }}" class="tab-pane{% if loop.index == 1 %} active{% endif %}">
-                        {{ include(tabOptions.template) }}
-                    </div>
-                {% else %}
-                    {{ include('@YAdmin/_fragments/formFields.html.twig') }}
-                {% endfor %}
+                {% block viewPanelBody %}
+                    {% for tabAlias, tabOptions in moduleConfig.tabs %}
+                        <div id="{{ tabAlias }}" class="tab-pane{% if loop.index == 1 %} active{% endif %}">
+                            {{ include(tabOptions.template) }}
+                        </div>
+                    {% else %}
+                        {{ include('@YAdmin/_fragments/formFields.html.twig') }}
+                    {% endfor %}
                 {% endblock %}
             </div>
         </div>
