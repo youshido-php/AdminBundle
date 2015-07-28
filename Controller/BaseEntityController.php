@@ -101,6 +101,39 @@ class BaseEntityController extends Controller
         ]);
     }
 
+    public function duplicateAction($module, $id, Request $request)
+    {
+        $this->get('adminContext')->setActiveModuleName($module);
+        $moduleConfig = $this->get('adminContext')->getActiveModule();
+
+        if ($id) {
+            $object = $this->getDoctrine()->getRepository($moduleConfig['entity'])->find($id);
+            $copy = clone $object;
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($copy);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute($moduleConfig['actions']['default']['route'], array('module' => $module));
+    }
+
+    public function removeAction($module, Request $request) {
+        $this->get('adminContext')->setActiveModuleName($module);
+        $moduleConfig = $this->get('adminContext')->getActiveModule();
+
+        if ($ids = $request->get('id')) {
+            $ids          = array($ids);
+            $entities = $this->getDoctrine()->getRepository($moduleConfig['entity'])->findBy(array('id' => $ids));
+            $em = $this->getDoctrine()->getManager();
+            foreach($entities as $object) {
+                $em->remove($object);
+            }
+            $em->flush();
+        }
+        return $this->redirectToRoute($moduleConfig['actions']['default']['route'], ['module' => $module]);
+    }
+
     protected function getPage(Request $request, $module)
     {
         $cacheKey = sprintf('admin_page_number_%s', $module);

@@ -141,7 +141,7 @@ class AdminContext
 
     public function isAuthorized()
     {
-        return $this->getToken() && $this->getToken()->getRoles();
+        return $this->get('security.context')->isGranted('IS_AUTHENTICATED_FULLY');
     }
 
     public function getToken()

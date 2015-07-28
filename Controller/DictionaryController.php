@@ -12,33 +12,38 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Youshido\CMSBundle\Structure\Attribute\AttributedTrait;
 
-class DictionaryController extends BaseEntityController {
+class DictionaryController extends BaseEntityController
+{
 
     /**
      * @Route("/dictionary/{module}/{pageNumber}", name="admin.dictionary.default", requirements={ "pageNumber" : "\d+"})
      */
-    public function defaultAction(Request $request, $module, $pageNumber = 1) {
+    public function defaultAction(Request $request, $module, $pageNumber = 1)
+    {
         return parent::defaultAction($request, $module, $pageNumber);
     }
 
     /**
      * @Route("/dictionary/{module}/add", name="admin.dictionary.add")
      */
-    public function addAction($module, Request $request) {
+    public function addAction($module, Request $request)
+    {
         return $this->processDetailAction($module, null, $request, 'add');
     }
 
     /**
      * @Route("/dictionary/{module}/export", name="admin.dictionary.export")
      */
-    public function exportAction($module, Request $request) {
+    public function exportAction($module, Request $request)
+    {
         return parent::exportAction($module, $request);
     }
 
     /**
      * @Route("/dictionary/{module}/edit/{id}", name="admin.dictionary.edit")
      */
-    public function editAction($module, $id, Request $request) {
+    public function editAction($module, $id, Request $request)
+    {
         return $this->processDetailAction($module, null, $request, 'edit');
     }
 
@@ -56,7 +61,7 @@ class DictionaryController extends BaseEntityController {
              */
             $path = $request->get('path');
             $needRefresh = false;
-            foreach($object->getAttributes() as $attr) {
+            foreach ($object->getAttributes() as $attr) {
                 if (strpos($path, $attr->getValue()) !== false) {
                     // todo correct attribute remove
                     $basePath = $this->get('kernel')->getRootDir() . '/../web';
@@ -76,49 +81,21 @@ class DictionaryController extends BaseEntityController {
         }
 
         return $this->redirectToRoute($moduleConfig['actions']['edit']['route'], ['module' => $moduleConfig['name'], 'id' => $id]);
-
-        //return new JsonResponse([
-        //    'status' => 'success'
-        //]);
-
     }
 
     /**
      * @Route("/dictionary/{module}/duplicate/{id}", name="admin.dictionary.duplicate")
      */
-    public function duplicateAction($module, $id, Request $request) {
-        $this->get('adminContext')->setActiveModuleName($module);
-        $moduleConfig = $this->get('adminContext')->getActiveModule();
-
-        if ($id) {
-            $object = $this->getDoctrine()->getRepository($moduleConfig['entity'])->find($id);
-            $copy = clone $object;
-            if (method_exists($copy, 'getTitle')) {
-                $copy->setTitle($copy->getTitle() . ' copy');
-            }
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($copy);
-            $em->flush();
-        }
-        return $this->redirectToRoute('admin.dictionary.default', array('module' => $module));
+    public function duplicateAction($module, $id, Request $request)
+    {
+        return parent::duplicateAction($module, $id, $request);
     }
 
     /**
      * @Route("/dictionary/{module}/remove", name="admin.dictionary.remove")
      */
-    public function removeAction($module, Request $request) {
-        $this->get('adminContext')->setActiveModuleName($module);
-        $moduleConfig = $this->get('adminContext')->getActiveModule();
-
-        if ($ids = $request->get('id')) {
-            $ids          = array($ids);
-            $entities = $this->getDoctrine()->getRepository($moduleConfig['entity'])->findBy(array('id' => $ids));
-            $em = $this->getDoctrine()->getManager();
-            foreach($entities as $object) {
-                $em->remove($object);
-            }
-            $em->flush();
-        }
-        return $this->redirectToRoute($moduleConfig['actions']['default']['route'], ['module' => $module]);
+    public function removeAction($module, Request $request)
+    {
+        return parent::removeAction($module, $request);
     }
 }
