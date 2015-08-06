@@ -51,7 +51,7 @@
 
                     <div class="topbar-left">
                         <ol class="breadcrumb">
-                            {% if adminContext.activeModule.nested is defined %}
+                            {% if adminContext.activeModule.nested is defined and adminContext.activeModule.nested %}
                                 <li class="crumb-link">
                                     <a href="{{ adminContext.getBackUrl() }}">&lt; Go back</a>
                                 </li>
