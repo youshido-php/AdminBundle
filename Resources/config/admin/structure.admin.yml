@@ -1,0 +1,43 @@
+modules:
+
+  administration:
+    type: Group
+    icon: fa fa-cogs
+
+  admin-rights:
+    title: Admin Rights
+    type: dictionary
+    group: administration
+    icon: imoon imoon-key2
+    entity: Youshido\AdminBundle\Entity\AdminRight
+    security: ROLE_SUPER_ADMIN
+    columns:
+      id: ~
+      title: ~
+    actions:
+      default:
+        show: [title]
+      add: ~
+      edit: ~
+
+  admin-users:
+    title: Admin Users
+    type: dictionary
+    group: administration
+    icon: fa fa-group
+    entity: Youshido\AdminBundle\Entity\AdminUser
+    security: ROLE_SUPER_ADMIN
+    columns:
+      login: ~
+      isActive:
+          type: boolean
+          title: 'Active'
+    header_actions:
+      add:
+          route: admin.user.new
+          title: Add
+          icon: 'fa fa-plus pr5'
+    actions:
+      default:
+        show: [login, isActive]
+      remove: ~

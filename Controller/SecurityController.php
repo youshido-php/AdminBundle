@@ -62,7 +62,7 @@ class SecurityController extends Controller {
     public function newUserAction(Request $request)
     {
         $adminContext = $this->get('adminContext');
-        $config = $adminContext->getActiveModuleForAction('add');
+        $config = $adminContext->getActiveModuleForAction('add', 'admin-users');
 
         $user = new $config['entity']();
         $user->setIsActive(true);
