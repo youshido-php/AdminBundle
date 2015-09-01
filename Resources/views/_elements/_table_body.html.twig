@@ -38,10 +38,9 @@
                                 <span class="fw600">{{ value }}</span>
                             {% endif %}
                         {% elseif columnInfo.type == "datetime" %}
-                            {{ value|date("m/d/Y H:i:s") }}
-                            {#{{ dump(value) }}#}
+                            {{ value ? value|date("m/d/Y H:i:s") : '' }}
                         {% elseif columnInfo.type == "date" %}
-                            {{ value|date("m/d/Y") }}
+                            {{ value ? value|date("m/d/Y") : '' }}
                         {% elseif columnInfo.type == "entity" and columnInfo.multiple is defined %}
                             {{ value|join(', ') }}
                         {% elseif columnInfo.type == "file" %}
