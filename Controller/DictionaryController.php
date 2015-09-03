@@ -98,4 +98,36 @@ class DictionaryController extends BaseEntityController
     {
         return parent::removeAction($module, $request);
     }
+
+    /**
+     * @param Request $request
+     *
+     * @Route("/dictionary/{module}/batch/remove", name="dictionary.batchs.remove")
+     */
+    public function batchRemoveAction(Request $request, $module)
+    {
+        if($request->getMethod() == 'POST' && ($ids = $request->get('ids', []))){
+
+            $this->get('adminContext')->setActiveModuleName($module);
+            $moduleConfig = $this->get('adminContext')->getActiveModule();
+
+            $query = $this->getDoctrine()->getRepository($moduleConfig['entity'])
+                ->createQueryBuilder('t');
+
+            $query
+                ->delete()
+                ->where($query->expr()->in('t.id', $ids))
+                ->getQuery()
+                ->execute();
+
+            $this->addFlash('success', 'Entities deleted');
+        }
+
+        $referer = $request->headers->get('referer', false);
+        if($referer){
+            return $this->redirect($referer = $request->headers->get('referer'));
+        }
+
+        return $this->redirectToRoute('admin.dashboard');
+    }
 }

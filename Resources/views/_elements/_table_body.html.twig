@@ -1,6 +1,12 @@
 <table class="table table-hover">
     <thead>
         <tr class="bg-light">
+            {% if adminContext.activeModule.batchs is defined %}
+                <th>
+                    <input type="checkbox" id="batch-select-all">
+                </th>
+            {% endif %}
+
             {% for columnName  in actions[action].show %}
                 {% if tableConfig.columns[columnName] is defined %}
                     {% set columnInfo = tableConfig.columns[columnName] %}
@@ -25,6 +31,12 @@
     <tbody>
     {% for object in objects %}
         <tr>
+            {% if adminContext.activeModule.batchs is defined %}
+                <th>
+                    <input type="checkbox" name="ids[]" value="{{ object.id }}" class="batch-checkbox-item">
+                </th>
+            {% endif %}
+
             {% for columnName  in actions[action].show %}
                 {% if tableConfig.columns[columnName] is defined %}
                     {% set columnInfo = tableConfig.columns[columnName] %}
