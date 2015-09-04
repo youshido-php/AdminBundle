@@ -88,6 +88,8 @@
 
 {% if adminContext.activeModule.batchs is defined %}
     {% block javascripts %}
+        {{ parent() }}
+
         <script type="text/javascript">
             $(function(){
                 var checkboxes = $('.batch-checkbox-item');
