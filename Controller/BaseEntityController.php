@@ -84,7 +84,7 @@ class BaseEntityController extends Controller
             }
         }
 
-        $perPageCount = 20;
+        $perPageCount = isset($moduleConfig['limit']) ? $moduleConfig['limit'] : 20;
         $paginator    = $this->getPaginated($qb, $this->getPage($request, $module), $perPageCount);
         $template     = empty($moduleConfig['actions']['default']['template']) ? '@YAdmin/List/default.html.twig' : $moduleConfig['actions']['default']['template'];
         return $this->render($template, [
