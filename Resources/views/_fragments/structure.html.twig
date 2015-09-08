@@ -10,7 +10,7 @@
                         <div class="dd-handle dd3-handle"></div>
                         <div class="dd3-content clearfix">
                             <span class="text">{{ view.objectTitle }}</span>
-                            <input type="text" placeholder="name" value="{{ view.name }}"/>
+                            <input class="structure-item" type="text" placeholder="name" value="{{ view.name }}"/>
                             <button class="view-remove-handler btn btn-link btn-sm pull-right">delete</button>
                         </div>
                     </li>
@@ -75,6 +75,13 @@
             $viewInput.val(JSON.stringify(views));
         });
 
+        $('.structure-item').on('keypress', function(e){
+            if(e.which == 13)
+            {
+                return false;
+            }
+        });
+
         $pageStructure.nestable({
             group: 1,
             maxDepth: 1
@@ -86,9 +93,14 @@
             isSource: true,
             processNewElement: function(el) {
                 var content = el.find('.dd3-content');
-                content
-                    .append('<input type="text" placeholder="name" name="view_name[]" />')
-                ;
+                var element = $('<input type="text" placeholder="name" name="view_name[]" />').on('keypress', function(e){
+                    if(e.which == 13)
+                    {
+                        return false;
+                    }
+                });
+
+                content.append(element);
             }
         })
     });
