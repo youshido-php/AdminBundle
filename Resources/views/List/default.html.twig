@@ -54,7 +54,7 @@
                             {{ include('@YAdmin/_elements/_table_body.html.twig', { tableConfig: moduleConfig, actions: moduleConfig.actions }) }}
                         </div>
                     </div>
-                    {% if pager.pagesCount and pager.pagesCount > 1 %}
+                    {% if pager.pagesCount and pager.pagesCount > 1 or adminContext.activeModule.batchs is defined %}
                     <div class="panel-footer">
                             <div class="row">
                                 {% if adminContext.activeModule.batchs is defined %}
