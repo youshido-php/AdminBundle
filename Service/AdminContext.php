@@ -113,6 +113,20 @@ class AdminContext
         return $this->_config['name'];
     }
 
+    public function getUseInternationalization()
+    {
+        return isset($this->_config['internationalization']['enable']) && $this->_config['internationalization']['enable'];
+    }
+
+    public function getInternationalizationConfig()
+    {
+        if(!$this->getUseInternationalization()){
+            return false;
+        }
+
+        return $this->_config['internationalization'];
+    }
+
     public function getActiveModule()
     {
         return $this->_modules[$this->_activeModuleName];

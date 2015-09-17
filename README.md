@@ -115,12 +115,12 @@ twig:
 
     firewalls:
         admin_free:
-            pattern: ^/admin/login$
+            pattern: ^/admin/login$ # ^/(?:ua/)?admin/login$ - if you have internationalization
             context: admin
             anonymous: ~
 
         admin_firewall:
-            pattern: ^/admin
+            pattern: ^/admin # ^/(?:ua/)?admin - if you have internationalization
             provider: admin_provider
             context: admin
             form_login:
@@ -155,4 +155,15 @@ php app/console admin:setup
 php app/console admin:generate
 ```
 
-#####Don't forget to import generated file to structure.yml
+##### !!! Don't forget to import generated file to structure.yml
+
+### 11. Config if you use internationalization 
+``` yaml
+//app/admin/structure.yml
+internationalization:
+  enable: true
+  locales:
+    en: ~
+    ua: ~
+    ru: ~
+```
