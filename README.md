@@ -21,7 +21,9 @@ $bundles = [
 ```
 
 ### 3. Create your own Admin Bundle:
+``` console
 php app/console generate:bundle --namespace=AdminBundle --bundle-name=AdminBundle --dir=src
+```
 
 ### 4. Create action in your AdminBundle default controller:
 ``` php
