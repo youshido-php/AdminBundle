@@ -147,3 +147,10 @@ imports:
 php app/console doctrine:schema:update --force
 php app/console admin:setup
 ```
+
+### 10. Generate configuration for you entity
+``` console
+php app/console admin:generate
+```
+
+#####Don't forget to import generated file to structure.yml
