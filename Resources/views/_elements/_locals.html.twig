@@ -1,0 +1,23 @@
+{% if adminContext.useInternationalization %}
+    {% set currentLocale = app.request.locale %}
+    {% set internationalizationConfig = adminContext.internationalizationConfig %}
+
+    {% if internationalizationConfig.locales[currentLocale].icon is defined %}
+        {% set currentLocalIcon = internationalizationConfig.locales[currentLocale].icon %}
+    {% else %}
+        {% set currentLocalIcon = ('flag flag-') ~ (currentLocale|lower == 'en' ? 'us' : currentLocale|lower) %}
+    {% endif %}
+
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <i class="{{ currentLocalIcon }}"></i>{{ currentLocale|upper }} <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+            {% for locale, localConf in internationalizationConfig.locales %}
+                {% if currentLocale|lower != locale|lower %}
+                    <li><a href="{{ path('admin.dashboard', { _locale: locale }) }}"><i class="{% if localConf.icon is defined %} {{ localConf.icon }} {% else %} flag flag-{{ locale|lower == 'en' ? 'us' : locale|lower }} {% endif %}"></i>{{ locale|upper }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </li>
+{% endif %}
