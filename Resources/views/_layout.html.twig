@@ -34,6 +34,7 @@
     <script src="vendor/plugins/redactor/redactor.min.js" type="text/javascript" charset="utf-8"></script>
     <link rel="stylesheet" href="vendor/plugins/redactor/redactor.css">
 
+    {{ include('@YAdmin/_additional_css.html.twig') }}
 </head>
 {% block bodyTags %}
     {{ include('@YAdmin/_elements/_body_start.html.twig') }}
@@ -118,6 +119,7 @@
         <script src="vendor/plugins/globalize/globalize.min.js"></script>
         <script src="vendor/plugins/moment/moment.min.js"></script>
         <script src="vendor/plugins/datepicker/js/bootstrap-datetimepicker.min.js"></script>
+        <script src="vendor/plugins/autocomplete/jquery.autocomplete.js"></script>
     {% endblock %}
     {% block javascripts %}
         <!-- Theme Javascript -->
