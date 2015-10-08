@@ -89,4 +89,28 @@ $(document).ready(function() {
         });
 
     });
+
+    $('.js-autocomplete').each(function(){
+        var queryParams = $(this).data('params');
+
+        $(this).select2({
+            ajax: {
+                url: $(this).data('url'),
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    queryParams.query = params.term;
+
+                    return queryParams;
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 1
+        });
+    });
 });

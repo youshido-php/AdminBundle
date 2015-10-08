@@ -277,7 +277,7 @@ class BaseEntityController extends Controller
             }
 
 
-            $this->get('admin.form.helper')->buildFormItem($column, $info, $formBuilder);
+            $this->get('admin.form.helper')->buildFormItem($column, $info, $formBuilder, $object);
         }
         $this->callHandlersWithParams('form.build', [$object, $formBuilder]);
         return $formBuilder->getForm();
