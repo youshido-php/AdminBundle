@@ -204,9 +204,6 @@ class BaseEntityController extends Controller
                 } else {
                     return $this->redirectToRoute($moduleConfig['actions']['edit']['route'], ['module' => $moduleConfig['name'], 'id' => $object->getId()]);
                 }
-            } else {
-                dump($form->getErrorsAsString(), $request->get('form'));
-                die();
             }
         }
         $this->callHandlersWithParams('render', [$object, $request]);
