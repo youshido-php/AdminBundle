@@ -9,9 +9,7 @@
             {% block viewPanelHeading %}
                 <ul class="nav panel-tabs-border panel-tabs panel-tabs-left">
                     {% for tabAlias, tabOptions in moduleConfig.tabs %}
-                        <li{% if loop.index == 1 %} class="active"{% endif %}><a href="#{{ tabAlias }}"
-                                                                                 data-toggle="tab">{{ tabOptions.title }}</a>
-                        </li>
+                        <li{% if loop.index == 1 %} class="active"{% endif %}><a href="#{{ tabAlias }}" data-toggle="tab">{{ tabOptions.title }}</a></li>
                     {% else %}
                         <span class="panel-title">Object information</span>
                     {% endfor %}
@@ -27,7 +25,7 @@
                             {{ include(tabOptions.template) }}
                         </div>
                     {% else %}
-                        {{ include('@YAdmin/_fragments/formFields.html.twig') }}
+                        {{ include('@YAdmin/Form/form.html.twig') }}
                     {% endfor %}
                 {% endblock %}
             </div>

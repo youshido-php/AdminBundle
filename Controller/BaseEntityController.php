@@ -101,7 +101,7 @@ class BaseEntityController extends Controller
         ]);
     }
 
-    public function duplicateAction($module, $id, Request $request)
+    public function duplicateAction($module, $id)
     {
         $this->get('adminContext')->setActiveModuleName($module);
         $moduleConfig = $this->get('adminContext')->getActiveModule();
@@ -151,7 +151,7 @@ class BaseEntityController extends Controller
         return 1;
     }
 
-    protected function exportAction($moduleConfig, Request $request)
+    protected function exportAction($moduleConfig)
     {
         $this->get('adminContext')->setActiveModuleName($moduleConfig);
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('export');
@@ -204,12 +204,11 @@ class BaseEntityController extends Controller
                 } else {
                     return $this->redirectToRoute($moduleConfig['actions']['edit']['route'], ['module' => $moduleConfig['name'], 'id' => $object->getId()]);
                 }
-            } else {
-                dump($form->getErrorsAsString(), $request->get('form'));
-                die();
             }
         }
+
         $this->callHandlersWithParams('render', [$object, $request]);
+
         $vars = array_merge($vars, [
             'object'       => $object,
             'moduleConfig' => $this->get('adminContext')->getActiveModuleForAction($actionName),
@@ -269,7 +268,10 @@ class BaseEntityController extends Controller
 
     protected function buildForm($object, $config)
     {
-        $formBuilder = $this->createFormBuilder($object, ['allow_extra_fields' => true, 'attr' => ['enctype' => 'multipart/form-data']]);
+        $formBuilder = $this->createFormBuilder($object, ['allow_extra_fields' => true, 'attr' => [
+            'enctype'    => 'multipart/form-data',
+            'novalidate' => 'novalidate'
+        ]]);
 
         foreach ($config['columns'] as $column => $info) {
             if(!array_key_exists('entity', $info)){
