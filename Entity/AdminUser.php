@@ -51,7 +51,7 @@ class AdminUser implements AdvancedUserInterface, \Serializable
 
 
     /**
-     * @ORM\ManyToMany(targetEntity="AdminRight",cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity="AdminRight",cascade={"persist"})
      * @ORM\JoinTable(name="AdminUserRight",
      *      joinColumns={@ORM\JoinColumn(name="id_user", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="id_right", referencedColumnName="id")}
