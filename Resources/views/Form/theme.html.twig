@@ -5,72 +5,27 @@
         {% set class = 'col-md-5' %}
         {% set combinedAttr = form.vars.attr %}
 
-        {% if form.vars.attr['data-column'] != 'checkbox' %}
+        {% if combinedAttr['data-column'] not in ['checkbox', 'form'] %}
             {% set combinedAttr = combinedAttr|merge({ class: (combinedAttr.class is defined ? combinedAttr.class : '') ~ 'form-control' }) %}
         {% endif %}
-
-        {% if form.vars.attr['data-column'] in ['date', 'image'] %}
-            {% set class = 'col-md-8' %}
-        {% elseif form.vars.attr['data-column'] == 'wysiwyg' %}
+        {% if combinedAttr['data-class'] is defined and combinedAttr['data-class'] == 'wide' %}
             {% set class = 'col-md-10' %}
-        {% elseif form.vars.attr['data-column'] == 'textarea' %}
+        {% endif %}
+
+        {% if combinedAttr['data-column'] in ['date', 'image'] %}
+            {% set class = 'col-md-8' %}
+        {% elseif combinedAttr['data-column'] in ['wysiwyg', 'form'] %}
+            {% set class = 'col-md-10' %}
+        {% elseif combinedAttr['data-column'] == 'textarea' %}
             {% set class = 'col-md-10' %}
             {% set combinedAttr = combinedAttr|merge({ rows: 10 }) %}
-        {% elseif form.vars.attr['data-column'] == 'html' %}
+        {% elseif combinedAttr['data-column'] == 'html' %}
             {% set class = 'col-md-10' %}
             {% set combinedAttr = combinedAttr|merge({ style: (combinedAttr.style is defined ? combinedAttr.style : '') ~ 'display: none;' }) %}
         {% endif %}
 
         <div class="{{ class }}">
-            {% if form.vars.attr['data-column'] == 'image' %}
-                {% if form.vars.value is not empty %}
-                    <img src="{{ form.vars.value | imagine_filter('preview_100') }}" style="width: 100px; background: repeat url('/bundles/yadmin/assets/assets/img/stock/bg-image.jpg')"/> <br/>
-                {% else %}
-                    <small>no file</small>
-                {% endif %}
-            {% endif %}
-
             {{- form_widget(form, { attr : combinedAttr }) -}}
-
-            {% if form.vars.attr['data-column'] == 'html' %}
-                <div class="form-control" style="position:relative; width: 780px;height: 500px;">
-                    <div id="{{ form.vars.id }}-editor" style="position: absolute; top:0; left: 0; right: 0; bottom:0;">{{ form.vars.value }} </div>
-                </div>
-
-                <script>
-                    $(function(){
-                        var editor = ace.edit("{{ form.vars.id }}-editor");
-                        editor.setTheme("ace/theme/monokai");
-                        editor.getSession().setMode("ace/mode/html");
-                        editor.on('change', function() {
-                            $('#{{ form.vars.id }}').val(editor.getValue());
-                        });
-                    });
-                </script>
-            {% elseif form.vars.attr['data-column'] == 'wysiwyg' %}
-                <script>
-                    $(function(){
-                        $('#{{ form.vars.id }}').redactor({
-                            convertDivs: true,
-                            cleanup: true,
-                            minHeight: 200,
-                            lang: 'en',
-                            custom_css: ['css/main.css'],
-                            base_href: "http://{{ app.request.baseUrl }}"
-                        });
-                    });
-                </script>
-            {% elseif form.vars.attr['data-column'] == 'date' %}
-                <script>
-                    $(document).ready(function() {
-                        $('#{{ form.vars.id }}').datetimepicker({
-                            pickTime: false,
-                            format: "YYYY-MM-DD"
-                        });
-                    });
-                </script>
-            {% endif %}
-
             {{- form_errors(form) -}}
         </div>
     </div>
@@ -88,6 +43,7 @@
             <p class="help-block">{{ attr.help }}</p>
         </span>
     {% endif %}
+
 {%- endblock form_widget -%}
 
 {%- block form_errors -%}
@@ -97,6 +53,22 @@
         {%- endfor -%}
     {%- endif -%}
 {%- endblock form_errors -%}
+
+{%- block collection_widget -%}
+    {{- block('form_widget') -}}
+{%- endblock collection_widget -%}
+
+
+{%- block form_rows -%}
+    {% for child in form %}
+        {{- form_row(child) -}}
+    {% endfor %}
+{%- endblock form_rows -%}
+
+{%- block form_widget_compound -%}
+    {{- block('form_rows') -}}
+    {{- form_rest(form) -}}
+{%- endblock form_widget_compound -%}
 
 {%- block form_label -%}
     {% set label_attr = label_attr|merge({ class : 'col-md-2 control-label'}) %}
@@ -121,3 +93,67 @@
         <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ translation_domain is same as(false) ? label : label|trans({}, translation_domain) }}</label>
     {%- endif -%}
 {%- endblock form_label -%}
+
+{%- block html_widget -%}
+    {% set attr = attr|merge({ style: (attr.style is defined ? attr.style : '') ~ ' display: none;' }) %}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+
+    <div class="form-control" style="position:relative; width: 780px;height: 500px;">
+        <div id="{{ id }}-editor" style="position: absolute; top:0; left: 0; right: 0; bottom:0;">{{ value }} </div>
+    </div>
+
+    <script>
+        $(function(){
+            var editor = ace.edit("{{ id }}-editor");
+            editor.setTheme("ace/theme/monokai");
+            editor.getSession().setMode("ace/mode/html");
+            editor.on('change', function() {
+                $('#{{ form.vars.id }}').val(editor.getValue());
+            });
+        });
+    </script>
+{%- endblock html_widget -%}
+
+{%- block picked_date_widget -%}
+    {%- set type = type|default('text') -%}
+    {% set attr = attr|merge({ class: (attr.class is defined ? attr.class : '') ~ ' form-control' }) %}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+
+    <script>
+        $(document).ready(function() {
+            $('#{{ id }}').datetimepicker({
+                pickTime: false,
+                format: "YYYY-MM-DD"
+            });
+        });
+    </script>
+{%- endblock picked_date_widget -%}
+
+{%- block image_widget -%}
+    <div>
+        {% if value is not empty %}
+            <img src="{{ value | imagine_filter('preview_100') }}" style="width: 100px; background: repeat url('/bundles/yadmin/assets/assets/img/stock/bg-image.jpg')"/> <br/>
+        {% else %}
+            <small>no file</small>
+        {% endif %}
+    </div>
+
+    <input type="file" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{%- endblock image_widget -%}
+
+{%- block wysiwyg_widget -%}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+
+    <script>
+        $(function(){
+            $('#{{ id }}').redactor({
+                convertDivs: true,
+                cleanup: true,
+                minHeight: 200,
+                lang: 'en',
+                custom_css: ['css/main.css'],
+                base_href: "http://{{ app.request.baseUrl }}"
+            });
+        });
+    </script>
+{%- endblock wysiwyg_widget -%}

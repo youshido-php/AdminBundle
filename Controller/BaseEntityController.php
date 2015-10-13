@@ -118,7 +118,7 @@ class BaseEntityController extends Controller
         return $this->redirectToRoute($moduleConfig['actions']['default']['route'], array('module' => $module));
     }
 
-    public function removeAction($module, Request $request) {
+    public function removeAction($module, Request $request, $id) {
         $this->get('adminContext')->setActiveModuleName($module);
         $moduleConfig = $this->get('adminContext')->getActiveModule();
 
