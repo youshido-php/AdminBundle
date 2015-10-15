@@ -58,21 +58,6 @@ class FormHelperService extends ContainerAware
                 $formBuilder->add($column, 'entity', $options);
                 break;
 
-            case 'wysiwyg':
-            case 'html':
-                $formBuilder->add($column, 'textarea', $options);
-                break;
-
-            case 'image':
-                $options = array_merge(array(
-                    'required' => false,
-                    'entity_class' => !empty($info['entity']) ? $info['entity'] : null,
-                    'entity_property' => !empty($info['entity_property']) ? $info['entity_property'] : $column
-                ), $options);
-
-                $formBuilder->add($column, 'youshido_file', $options);
-                break;
-
             case 'autocomplete':
                 if (!$object) {
                     throw new \Exception('Autocomplete type not work for filters');

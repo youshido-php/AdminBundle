@@ -25,3 +25,25 @@ services:
           - [ setContainer, [@service_container]]
       tags:
           - { name: twig.extension }
+
+
+############### custom form type ############################
+  admin.form.type.wysiwyg:
+      class: Youshido\AdminBundle\Form\Type\WysiwygType
+      tags:
+          - { name: form.type, alias: wysiwyg }
+
+  admin.form.type.html:
+      class: Youshido\AdminBundle\Form\Type\HtmlType
+      tags:
+          - { name: form.type, alias: html }
+
+  admin.form.type.picked_date:
+      class: Youshido\AdminBundle\Form\Type\PickedDateType
+      tags:
+          - { name: form.type, alias: picked_date }
+
+  admin.form.type.image:
+      class: Youshido\AdminBundle\Form\Type\ImageType
+      tags:
+          - { name: form.type, alias: image }
