@@ -229,6 +229,7 @@ class BaseEntityController extends Controller
         $form = $this->buildForm($object, $moduleConfig);
         $form->handleRequest($request);
 
+        $errors = [];
         if ($form->isSubmitted()) {
             $this->callHandlersWithParams('validate', [$object, $request]);
             if ($form->isValid()) {
@@ -240,6 +241,8 @@ class BaseEntityController extends Controller
                 } else {
                     return $this->redirectToRoute($moduleConfig['actions']['edit']['route'], ['module' => $moduleConfig['name'], 'id' => $object->getId()]);
                 }
+            }else{
+                $errors = $form->getErrors(true);
             }
         }
         $this->callHandlersWithParams('render', [$object, $request]);
@@ -247,6 +250,7 @@ class BaseEntityController extends Controller
             'object'       => $object,
             'moduleConfig' => $this->get('adminContext')->getActiveModuleForAction($actionName),
             'form'         => $form->createView(),
+            'errors'       => $errors
         ]);
 
         return $this->render('@YAdmin/List/view.html.twig', $vars);
@@ -276,7 +280,11 @@ class BaseEntityController extends Controller
     {
         $moduleConfig = $this->get('adminContext')->getActiveModule();
 
-        return $this->getDoctrine()->getRepository($moduleConfig['entity'])->find($request->get('id'));
+        if ($id = $request->get('id')) {
+            return $this->getDoctrine()->getRepository($moduleConfig['entity'])->find($id);
+        } else {
+            return new $moduleConfig['entity'];
+        }
     }
 
     protected function saveValidObject($object)

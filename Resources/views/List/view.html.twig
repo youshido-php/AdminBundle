@@ -28,6 +28,17 @@
                         </div>
                     {% else %}
                         {{ include('@YAdmin/_fragments/formFields.html.twig') }}
+
+                        {% if errors is defined %}
+                            {% for error in errors %}
+                                <div class="row">
+                                    <div class="col-md-2"></div>
+                                    <div class="col-md-8">
+                                        <h3 class="text-danger">{{ error.origin.config.name|capitalize }}: {{ error.message }}</h3>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     {% endfor %}
                 {% endblock %}
             </div>
