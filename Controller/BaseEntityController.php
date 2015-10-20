@@ -29,32 +29,12 @@ class BaseEntityController extends Controller
         $this->get('adminContext')->setActiveModuleName($module);
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('default');
 
-        $filterData     = $this->getFilterData($request);
-        /** @var FormBuilder $filtersBuilder */
-        $filtersBuilder = $this->get('form.factory')
-            ->createNamedBuilder('filter', 'form', $filterData, ['method' => 'get', 'csrf_protection' => false, 'attr' => ['class' => 'form form-inline']]);
+        $cachedFilterForm = $this->get('session')->get($this->getFilterCacheKey($module), []);
+        $filterForm = $this->createFilterForm($cachedFilterForm, $moduleConfig);
+        $filterForm->handleRequest($request);
+        $filterData = $filterForm->isSubmitted() && $filterForm->isValid() ? $filterForm->getData() : $cachedFilterForm;
 
-        if (!empty($moduleConfig['filters'])) {
-            foreach ($moduleConfig['filters'] as $key => $value) {
-                if (empty($value)) $value = [];
-                $value = array_merge($moduleConfig['columns'][$key], $value);
-                $value['required'] = false;
-                $value['placeholder'] = $value['title'];
-                $this->get('admin.form.helper')->buildFormItem($key, $value, $filtersBuilder);
-            }
-        }
-        $filterForm = $filtersBuilder->getForm();
-
-        if(!empty($filterData)){
-            $this->get('session')->set($this->getFilterCacheKey($module), $filterData);
-        }else{
-            if($this->get('session')->has($this->getFilterCacheKey($module))){
-                $filterData = $this->get('session')->get($this->getFilterCacheKey($module));
-                $filterForm->submit(array_map(function($el){
-                    return is_object($el) ? $el->getId() : $el;
-                }, (array) $filterData));
-            }
-        }
+        $this->get('session')->set($this->getFilterCacheKey($module), $filterData);
 
         /**
          * @var QueryBuilder $qb
@@ -64,13 +44,17 @@ class BaseEntityController extends Controller
 
         if (!empty($filterData)) {
             foreach ($filterData as $key => $value) {
-                $qb->andWhere('t.' . $key . ' = :' . $key);
-                $qb->setParameter($key, $value);
+                if($value){
+                    $qb->andWhere(sprintf('t.%s = :%s_query', $key, $key));
+                    $qb->setParameter($key . '_query', $value);
+                }
             }
         }
 
-        $order = $request->get('order', !empty($moduleConfig['sort']) ? $moduleConfig['sort'][1] : 'asc');
-        $orderField = $request->get('orderField', !empty($moduleConfig['sort']) ? $moduleConfig['sort'][0] : false);
+        list($orderField, $order) = $this->getSavedOrderFields($module);
+
+        $order      = $request->get('order', $order ?: (!empty($moduleConfig['sort']) ? $moduleConfig['sort'][1] : 'asc'));
+        $orderField = $request->get('orderField',  $orderField ?: !empty($moduleConfig['sort']) ? $moduleConfig['sort'][0] : false);
 
         if ($orderField) {
             if (!empty($moduleConfig['subviews'][$orderField])) {
@@ -96,6 +80,8 @@ class BaseEntityController extends Controller
                     $qb->orderBy('t.' . $orderField, $order);
                 }
             }
+
+            $this->saveOrderFields($orderField, $order, $module);
         }
 
         if (!empty($moduleConfig['where'])) {
@@ -127,6 +113,28 @@ class BaseEntityController extends Controller
                 'pagesCount'  => ceil(count($paginator) / $perPageCount),
             ],
         ]);
+    }
+
+    private function createFilterForm($filterData, $moduleConfig)
+    {
+        /** @var FormBuilder $filtersBuilder */
+        $filtersBuilder = $this->get('form.factory')
+            ->createNamedBuilder('filter', 'form', $filterData, [
+                'method' => 'get',
+                'csrf_protection' => false,
+                'attr' => ['class' => 'form form-inline']
+            ]);
+
+        if (!empty($moduleConfig['filters'])) {
+            foreach ($moduleConfig['filters'] as $key => $value) {
+                $options = $moduleConfig['columns'][$key];
+                $options['required'] = false;
+                $options['placeholder'] = $value['title'];
+                $this->get('admin.form.helper')->buildFormItem($key, $options, $filtersBuilder);
+            }
+        }
+
+        return $filtersBuilder->getForm();
     }
 
     public function duplicateAction($module, $id, Request $request)
@@ -268,21 +276,7 @@ class BaseEntityController extends Controller
     {
         $moduleConfig = $this->get('adminContext')->getActiveModule();
 
-        $filterData = $this->getFilterData();
-        if ($id = $request->get('id')) {
-            $object = $this->getDoctrine()->getRepository($moduleConfig['entity'])->find($id);
-        } else {
-            $object = new $moduleConfig['entity'];
-            if (!empty($filterData)) {
-                foreach ($filterData as $key => $value) {
-                    $method = 'set' . ucfirst($key);
-                    if (is_callable(array($object, $method))) {
-                        $object->$method($value);
-                    }
-                }
-            }
-        }
-        return $object;
+        return $this->getDoctrine()->getRepository($moduleConfig['entity'])->find($request->get('id'));
     }
 
     protected function saveValidObject($object)
@@ -308,48 +302,6 @@ class BaseEntityController extends Controller
         return $formBuilder->getForm();
     }
 
-    protected function getFilterData(Request $request = null)
-    {
-        $moduleConfig = $this->get('adminContext')->getActiveModule();
-        $filtersBag = [];
-
-        if (!empty($request)) {
-            $data = $request->get('filter', array());
-            if (!empty($data['_token'])) unset($data['_token']);
-            foreach ($data as $key => $value) {
-                if ($value) {
-                    $filtersBag[$key] = $value;
-                } elseif (array_key_exists($key, $filtersBag)) {
-                    unset($filtersBag[$key]);
-                }
-            }
-        }
-        if (!empty($moduleConfig['filters'])) {
-            foreach ($moduleConfig['filters'] as $key => $info) {
-                if (!empty($info['required']) && empty($filtersBag[$key])) {
-                    $filtersBag[$key] = "__first_value_key";
-                }
-            }
-        }
-
-
-        foreach ($filtersBag as $key => $value) {
-            if ($moduleConfig['columns'][$key]['type'] == 'entity') {
-                if (!is_object($value)) {
-                    if ($value == "__first_value_key") {
-                        $filtersBag[$key] = $this->getDoctrine()->getRepository($moduleConfig['columns'][$key]['entity'])->findOneBy(array());
-                    } else {
-                        $filtersBag[$key] = $this->getDoctrine()->getRepository($moduleConfig['columns'][$key]['entity'])->find($value);
-                    }
-                } else {
-                    $filtersBag[$key] = $this->getDoctrine()->getRepository($moduleConfig['columns'][$key]['entity'])->find($value->getId());
-                }
-            }
-        }
-
-        return $filtersBag;
-    }
-
     protected function getPaginated($query, $pageNumber, $count = 20)
     {
         $query->setFirstResult(($pageNumber - 1) * $count)
@@ -361,5 +313,23 @@ class BaseEntityController extends Controller
     protected function getFilterCacheKey($module)
     {
         return sprintf('filers_%s', $module);
+    }
+
+    private function saveOrderFields($orderField, $order, $module)
+    {
+        $this->get('session')->set(sprintf('%s_orders', $module), [
+            'order'      => $order,
+            'orderField' => $orderField
+        ]);
+    }
+
+    private function getSavedOrderFields($module)
+    {
+        $saved = $this->get('session')->get(sprintf('%s_orders', $module), []);
+
+        return [
+            isset($saved['orderField']) ? $saved['orderField'] : null,
+            isset($saved['order']) ? $saved['order'] : null
+        ];
     }
 }
