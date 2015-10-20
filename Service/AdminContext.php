@@ -331,4 +331,16 @@ class AdminContext
     {
         return $this->get(str_replace('@', '', $service));
     }
+
+    public function crateOrderLink($orderField, $order)
+    {
+        $module = $this->getActiveModule();
+        $uri = $this->generateModuleLink($module['type'], $module['name']);
+
+        $parameters = $_GET;
+        $parameters['orderField'] = $orderField;
+        $parameters['order'] = $order;
+
+        return $uri . '?' . http_build_query($parameters);
+    }
 }

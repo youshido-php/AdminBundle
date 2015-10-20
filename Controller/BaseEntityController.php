@@ -68,8 +68,34 @@ class BaseEntityController extends Controller
                 $qb->setParameter($key, $value);
             }
         }
-        if (!empty($moduleConfig['sort'])) {
-            $qb->orderBy('t.' . $moduleConfig['sort'][0], $moduleConfig['sort'][1]);
+
+        $order = $request->get('order', !empty($moduleConfig['sort']) ? $moduleConfig['sort'][1] : 'asc');
+        $orderField = $request->get('orderField', !empty($moduleConfig['sort']) ? $moduleConfig['sort'][0] : false);
+
+        if ($orderField) {
+            if (!empty($moduleConfig['subviews'][$orderField])) {
+                if (!empty($moduleConfig['subviews'][$orderField]['sortable'])) {
+                    if (!empty($moduleConfig['subviews'][$orderField]['sortable']['join'])) {
+                        $join = $moduleConfig['subviews'][$orderField]['sortable']['join'];
+                        $qb->leftJoin('t.' . $join[0], $join[1]);
+                    }
+
+                    $sort = $moduleConfig['subviews'][$orderField]['sortable']['sort'];
+                    $qb->orderBy($sort[0], $order);
+                }
+            } else {
+                if(!empty($moduleConfig['columns'][$orderField]['sortable'])){
+                    if (!empty($moduleConfig['columns'][$orderField]['sortable']['join'])) {
+                        $join = $moduleConfig['columns'][$orderField]['sortable']['join'];
+                        $qb->leftJoin('t.' . $join[0], $join[1]);
+                    }
+
+                    $sort = $moduleConfig['columns'][$orderField]['sortable']['sort'];
+                    $qb->orderBy($sort[0], $order);
+                }else{
+                    $qb->orderBy('t.' . $orderField, $order);
+                }
+            }
         }
 
         if (!empty($moduleConfig['where'])) {
@@ -92,6 +118,8 @@ class BaseEntityController extends Controller
             'moduleConfig' => $moduleConfig,
             'action'       => 'default',
             'filters'      => $filterForm->createView(),
+            'order'        => $order,
+            'orderField'   => $orderField,
             'pager'        => [
                 'currentPage' => $pageNumber,
                 'route'       => $request->get('_route'),

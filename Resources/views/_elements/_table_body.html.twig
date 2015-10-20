@@ -1,4 +1,4 @@
-<table class="table table-hover">
+<table class="table table-hover dataTable ">
     <thead>
         <tr class="bg-light">
             {% if adminContext.activeModule.batchs is defined %}
@@ -19,7 +19,24 @@
                 {% endif %}
 
                 {% if columnInfo is defined and columnInfo %}
-                    <th class="header_{{ columnName }}" id="field-title-{{ columnName }}">{{ columnInfo.title is defined ? columnInfo.title : columnName|capitalize }}</th>
+                    {% set isSortable = false %}
+                    {% set sortClass = false %}
+
+                    {% if adminContext.activeModule.sortable is defined and columnName in adminContext.activeModule.sortable %}
+                        {% set isSortable = true %}
+                        {% set sortClass = (columnName == orderField ? 'sorting_' ~ order : 'sorting') %}
+                        {% set currentOrder = (columnName == orderField ? (order == 'desc' ? 'asc' : 'desc') : 'desc') %}
+                    {% endif %}
+
+                    <th class="header_{{ columnName }} {{ sortClass }}" id="field-title-{{ columnName }}">
+                        {% if isSortable %}
+                            <a href="{{ adminContext.crateOrderLink(columnName, currentOrder) }}">
+                                {{ columnInfo.title is defined ? columnInfo.title : columnName|capitalize }}
+                            </a>
+                        {% else %}
+                            {{ columnInfo.title is defined ? columnInfo.title : columnName|capitalize }}
+                        {% endif %}
+                    </th>
                 {% endif %}
             {% endfor %}
 
