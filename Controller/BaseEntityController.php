@@ -54,7 +54,7 @@ class BaseEntityController extends Controller
         list($orderField, $order) = $this->getSavedOrderFields($module);
 
         $order      = $request->get('order', $order ?: (!empty($moduleConfig['sort']) ? $moduleConfig['sort'][1] : 'asc'));
-        $orderField = $request->get('orderField',  $orderField ?: !empty($moduleConfig['sort']) ? $moduleConfig['sort'][0] : false);
+        $orderField = $request->get('orderField',  $orderField ?: (!empty($moduleConfig['sort']) ? $moduleConfig['sort'][0] : false));
 
         if ($orderField) {
             if (!empty($moduleConfig['subviews'][$orderField])) {
