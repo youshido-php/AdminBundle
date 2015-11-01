@@ -38,12 +38,11 @@
         {{- block('form_widget_simple') -}}
     {% endif %}
 
-    {% if attr.help is defined %}
+    {% if attr.help is defined and attr.help %}
         <span class="help-block mt5">
             <p class="help-block">{{ attr.help }}</p>
         </span>
     {% endif %}
-
 {%- endblock form_widget -%}
 
 {%- block form_errors -%}
@@ -102,6 +101,12 @@
         <div id="{{ id }}-editor" style="position: absolute; top:0; left: 0; right: 0; bottom:0;">{{ value }} </div>
     </div>
 
+    {% if attr.help is defined and attr.help %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ attr.help }}</p>
+        </span>
+    {% endif %}
+
     <script>
         $(function(){
             var editor = ace.edit("{{ id }}-editor");
@@ -118,6 +123,12 @@
     {%- set type = type|default('text') -%}
     {% set attr = attr|merge({ class: (attr.class is defined ? attr.class : '') ~ ' form-control' }) %}
     <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+
+    {% if attr.help is defined and attr.help %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ attr.help }}</p>
+        </span>
+    {% endif %}
 
     <script>
         $(document).ready(function() {
@@ -138,11 +149,23 @@
         {% endif %}
     </div>
 
+    {% if attr.help is defined and attr.help %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ attr.help }}</p>
+        </span>
+    {% endif %}
+
     <input type="file" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
 {%- endblock image_widget -%}
 
 {%- block wysiwyg_widget -%}
     <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+
+    {% if attr.help is defined and attr.help %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ attr.help }}</p>
+        </span>
+    {% endif %}
 
     <script>
         $(function(){

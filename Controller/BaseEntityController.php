@@ -87,6 +87,12 @@ class BaseEntityController extends Controller
         $perPageCount = isset($moduleConfig['limit']) ? $moduleConfig['limit'] : 20;
         $paginator    = $this->getPaginated($qb, $this->getPage($request, $module), $perPageCount);
         $template     = empty($moduleConfig['actions']['default']['template']) ? '@YAdmin/List/default.html.twig' : $moduleConfig['actions']['default']['template'];
+
+        $additionalParameters = [];
+        foreach($request->query->getIterator() as $key  => $value){
+            $additionalParameters[$key] = $value;
+        }
+
         return $this->render($template, [
             'objects'      => $paginator,
             'moduleConfig' => $moduleConfig,
@@ -95,7 +101,7 @@ class BaseEntityController extends Controller
             'pager'        => [
                 'currentPage' => $pageNumber,
                 'route'       => $request->get('_route'),
-                'parameters'  => $request->attributes->get('_route_params'),
+                'parameters'  => array_merge($request->attributes->get('_route_params', []), $additionalParameters),
                 'pagesCount'  => ceil(count($paginator) / $perPageCount),
             ],
         ]);
