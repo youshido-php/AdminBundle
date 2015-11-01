@@ -92,7 +92,7 @@ class ExcelExporter extends ContainerAware
 
     private function generatePath()
     {
-        return sprintf('%s%s.%s', sys_get_temp_dir(), uniqid(), 'xlsx');
+        return sprintf('%s%s.%s', sys_get_temp_dir(), uniqid(), 'xls');
     }
 
     private function getColumnConfig($moduleConfig)
