@@ -72,7 +72,7 @@
                         {% elseif columnInfo.type == "collection" %}
                         {% elseif columnInfo.type == "entity" %}
                             {{ value }}
-                        {% elseif columnInfo.type == "boolean" %}
+                        {% elseif columnInfo.type == "checkbox" %}
                             {% if value %}
                                 <span class="badge badge-success">yes</span>
                             {% else %}
