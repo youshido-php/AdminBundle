@@ -142,8 +142,8 @@
 
 {%- block image_widget -%}
     <div>
-        {% if value is not empty %}
-            <img src="{{ value | imagine_filter('preview_100') }}" style="width: 100px; background: repeat url('/bundles/yadmin/assets/assets/img/stock/bg-image.jpg')"/> <br/>
+        {% if data.pathname is defined and data.pathname %}
+            <img src="{{ data.pathname | imagine_filter('my_thumb') }}" style="width: 100px; background: repeat url('/bundles/yadmin/assets/assets/img/stock/bg-image.jpg')"/> <br/>
         {% else %}
             <small>no file</small>
         {% endif %}
