@@ -51,7 +51,7 @@
                             {% endif %}
                         {% elseif columnInfo.type == "datetime" %}
                             {{ value ? value|date("m/d/Y H:i:s") : '' }}
-                        {% elseif columnInfo.type == "date" %}
+                        {% elseif columnInfo.type in ["picked_date", "date"] %}
                             {{ value ? value|date("m/d/Y") : '' }}
                         {% elseif columnInfo.type == "entity" and columnInfo.multiple is defined %}
                             {{ value|join(', ') }}
