@@ -85,7 +85,12 @@ $(document).ready(function() {
             type: noteStyle,
             stack: stacks[noteStack],
             width: findWidth(),
-            delay: 1400
+            delay: 1400,
+            buttons: {
+                closer_hover: false,
+                sticker: false,
+                sticker_hover: false
+            }
         });
 
     });
