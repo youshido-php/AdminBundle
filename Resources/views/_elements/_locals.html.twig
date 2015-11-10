@@ -15,7 +15,9 @@
         <ul class="dropdown-menu">
             {% for locale, localConf in internationalizationConfig.locales %}
                 {% if currentLocale|lower != locale|lower %}
-                    <li><a href="{{ path('admin.dashboard', { _locale: locale }) }}"><i class="{% if localConf.icon is defined %} {{ localConf.icon }} {% else %} flag flag-{{ locale|lower == 'en' ? 'us' : locale|lower }} {% endif %}"></i>{{ locale|upper }}</a></li>
+                    <li>
+                        <a href="{{ path(app.request.get('_route'), app.request.get('_route_params')|merge({'_locale': locale })) }}"><i class="{% if localConf.icon is defined %} {{ localConf.icon }} {% else %} flag flag-{{ locale|lower == 'en' ? 'us' : locale|lower }} {% endif %}"></i>{{ locale|upper }}</a>
+                    </li>
                 {% endif %}
             {% endfor %}
         </ul>
