@@ -98,6 +98,13 @@ class BaseEntityController extends Controller
 
         $perPageCount = isset($moduleConfig['limit']) ? $moduleConfig['limit'] : 20;
         $paginator    = $this->getPaginated($qb, $this->getPage($request, $module), $perPageCount);
+
+        $ids = [];
+        foreach ($paginator as $item) {
+            $ids[] = $item->getId();
+        }
+        $this->saveLastIds($module, $ids);
+
         $template     = empty($moduleConfig['actions']['default']['template']) ? '@YAdmin/List/default.html.twig' : $moduleConfig['actions']['default']['template'];
         return $this->render($template, [
             'objects'      => $paginator,
@@ -113,6 +120,16 @@ class BaseEntityController extends Controller
                 'pagesCount'  => ceil(count($paginator) / $perPageCount),
             ],
         ]);
+    }
+
+    private function saveLastIds($module, $ids)
+    {
+        $this->get('session')->set('admin.last_ids' . $module, $ids);
+    }
+
+    protected function getLastIds($module)
+    {
+        return $this->get('session')->get('admin.last_ids' . $module, []);
     }
 
     private function createFilterForm($filterData, $moduleConfig)
@@ -315,11 +332,7 @@ class BaseEntityController extends Controller
         $query->setFirstResult(($pageNumber - 1) * $count)
             ->setMaxResults($count);
 
-     
-        $pg = new Paginator($query);
-        $pg->setUseOutputWalkers(false);
-
-        return $pg;
+        return new Paginator($query);
     }
 
     protected function getFilterCacheKey($module)
