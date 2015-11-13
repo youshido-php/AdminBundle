@@ -82,6 +82,11 @@
                                         </li>
                                     {% endif %}
                                 {% endif %}
+                                {% if adminContext.activeModule.name == "dashboard" %}
+                                        <li class="crumb-active">
+                                            {{ adminContext.activeModule.title }}
+                                        </li>
+                                {% endif %}
                             {% endif %}
                         </ol>
 
