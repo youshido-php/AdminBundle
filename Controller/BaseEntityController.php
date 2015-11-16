@@ -217,6 +217,7 @@ class BaseEntityController extends Controller
 
         $vars = array_merge($vars, [
             'object'       => $object,
+            'actionName'   => $actionName,
             'moduleConfig' => $this->get('adminContext')->getActiveModuleForAction($actionName),
             'form'         => $form->createView(),
         ]);
