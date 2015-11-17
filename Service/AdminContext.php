@@ -129,7 +129,11 @@ class AdminContext
 
     public function getActiveModule()
     {
-        return $this->_modules[$this->_activeModuleName];
+        if(array_key_exists($this->_activeModuleName, $this->_modules)){
+            return $this->_modules[$this->_activeModuleName];
+        }
+
+        return null;
     }
 
     public function getCurrentObject()
