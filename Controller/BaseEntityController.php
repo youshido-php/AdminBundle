@@ -161,7 +161,6 @@ class BaseEntityController extends Controller
         return $filtersBuilder->getForm();
     }
 
-    public function duplicateAction($module, $id, Request $request)
     public function duplicateAction($module, $id)
     {
         $this->get('adminContext')->setActiveModuleName($module);
@@ -179,7 +178,7 @@ class BaseEntityController extends Controller
         return $this->redirectToRoute($moduleConfig['actions']['default']['route'], array('module' => $module));
     }
 
-    public function removeAction($module, Request $request) {
+    public function removeAction($module, Request $request, $id) {
         $this->get('adminContext')->setActiveModuleName($module);
         $moduleConfig = $this->get('adminContext')->getActiveModule();
 
