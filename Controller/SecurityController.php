@@ -53,7 +53,7 @@ class SecurityController extends Controller {
 
     }
 
-    /**
+     /**
      * @param Request $request
      * @return Response
      *
@@ -64,6 +64,7 @@ class SecurityController extends Controller {
         $adminContext = $this->get('adminContext');
         $config = $adminContext->getActiveModuleForAction('add', 'admin-users');
 
+        /** @var AdminUser $user */
         $user = new $config['entity']();
         $user->setIsActive(true);
 
@@ -71,31 +72,38 @@ class SecurityController extends Controller {
             'action' => $this->generateUrl('admin.user.new'),
             'attr' => ['class' => 'form-horizontal']
         ])
-            ->add('login', null, ['attr' => ['class' => 'form-control']])
-            ->add('isActive', null, ['attr' => ['class' => 'form-control'], 'required' => false])
+            ->add('login', null, ['attr' => ['data-column' => 'text']])
             ->add('password', 'repeated', array(
                 'type' => 'password',
                 'invalid_message' => 'The password fields must match.',
-                'options' => array('attr' => array('class' => 'form-control')),
+                'options' => array('attr' => array('data-column' => 'text')),
                 'required' => true,
                 'first_options'  => array('label' => 'Password'),
                 'second_options' => array('label' => 'Repeat Password'),
             ))
-            ->add('rights', null, ['attr' => ['style' => 'width: 400px;']])
+            ->add('rights', null, ['attr' => ['style' => 'width: 400px;', 'data-column' => 'select']])
             ->getForm();
 
         $form->handleRequest($request);
 
         if($form->isValid()){
-            $password = $this->get('security.encoder_factory')->getEncoder($user)->encodePassword($user->getPassword(), $user->getSalt());
-            $user->setPassword($password);
+            if ($user->getRights()->count()) {
+                $password = $this->get('security.encoder_factory')->getEncoder($user)->encodePassword($user->getPassword(), $user->getSalt());
+                $user
+                    ->setPassword($password)
+                    ->setIsActive(true);
 
-            $m = $this->get('doctrine')->getManager();
+                $m = $this->get('doctrine')->getManager();
 
-            $m->persist($user);
-            $m->flush();
+                $m->persist($user);
+                $m->flush();
 
-            $this->redirectToRoute('admin.dictionary.default', ['module' => 'admin-users']);
+                $this->addFlash('success', 'New user has been added!');
+
+                return $this->redirectToRoute('admin.dictionary.default', ['module' => 'admin-users']);
+            }else{
+                $form->get('rights')->addError(new FormError('Minimum one right need to be added.'));
+            }
         }
 
         $vars = [
