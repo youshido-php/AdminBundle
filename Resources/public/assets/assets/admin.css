@@ -308,3 +308,33 @@
 .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
 .autocomplete-group { padding: 2px 5px; }
 .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_desc,
+table.dataTable thead .sorting_asc {
+    background: none;
+    white-space: nowrap;
+}
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_desc:after,
+table.dataTable thead .sorting_asc:after {
+    content: '';
+    width: 19px;
+    height: 19px;
+    display: inline-block;
+    overflow: hidden;
+    text-indent: 100%;
+    vertical-align: baseline;
+    margin: -5px 0;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+table.dataTable thead .sorting:after {
+    background-image: url("img/plugins/sort_both.png");
+}
+table.dataTable thead .sorting_desc:after {
+    background-image: url("img/plugins/sort_desc.png");
+}
+table.dataTable thead .sorting_asc:after {
+    background-image: url("img/plugins/sort_asc.png");
+}
