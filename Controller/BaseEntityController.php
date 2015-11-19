@@ -344,7 +344,10 @@ class BaseEntityController extends Controller
         $query->setFirstResult(($pageNumber - 1) * $count)
             ->setMaxResults($count);
 
-        return new Paginator($query);
+        $paginator = new Paginator($query);
+        $paginator->setUseOutputWalkers(false);
+
+        return $paginator;
     }
 
     protected function getFilterCacheKey($module)
