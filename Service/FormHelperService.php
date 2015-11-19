@@ -21,10 +21,16 @@ class FormHelperService extends ContainerAware
 
     public function buildFormItem($column, $info, FormBuilder $formBuilder, $object = null)
     {
+        $attr = [
+            'data-column' => $info['type']
+        ];
+
+        if(isset($info['options']['attr'])){
+            $attr = array_merge($info['options']['attr'], $attr);
+        }
+
         $options = array_merge(isset($info['options']) ? $info['options'] : [], [
-            'attr' => [
-                'data-column' => $info['type']
-            ]
+            'attr' => $attr
         ]);
 
         if (isset($info['title'])) {

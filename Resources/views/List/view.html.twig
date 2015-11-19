@@ -13,7 +13,7 @@
                                                                                      data-toggle="tab">{{ tabOptions.title }}</a>
                             </li>
                         {% else %}
-                            <span class="panel-title">Object information</span>
+                            <span class="panel-title">{{ pageTitle|default('Object information') }}</span>
                         {% endfor %}
                     </ul>
                 {% endblock %}

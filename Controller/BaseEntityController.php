@@ -96,6 +96,7 @@ class BaseEntityController extends Controller
         return $this->render($template, [
             'objects'      => $paginator,
             'moduleConfig' => $moduleConfig,
+            'tableTitle'   => isset($moduleConfig['actions']['default']['title']) ? $moduleConfig['actions']['default']['title'] : '',
             'action'       => 'default',
             'filters'      => $filterForm->createView(),
             'pager'        => [
@@ -136,6 +137,8 @@ class BaseEntityController extends Controller
                 $em->remove($object);
             }
             $em->flush();
+
+            $this->addFlash('success', 'Element was removed!');
         }
         return $this->redirectToRoute($moduleConfig['actions']['default']['route'], ['module' => $module]);
     }
@@ -217,6 +220,7 @@ class BaseEntityController extends Controller
 
         $vars = array_merge($vars, [
             'object'       => $object,
+            'pageTitle'    => isset($moduleConfig['actions'][$actionName]['page_title']) ? $moduleConfig['actions'][$actionName]['page_title'] : '',
             'actionName'   => $actionName,
             'moduleConfig' => $this->get('adminContext')->getActiveModuleForAction($actionName),
             'form'         => $form->createView(),

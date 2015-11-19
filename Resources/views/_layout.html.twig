@@ -27,6 +27,7 @@
         <link rel="stylesheet" type="text/css" href="assets/admin.css">
         <link rel="stylesheet" type="text/css" href="assets/admin-tools/admin-forms/css/admin-forms.css">
         <link rel="stylesheet" type="text/css" href="assets/fonts/icomoon/icomoon.css">
+        <link rel="stylesheet" type="text/css" href="vendor/plugins/magnific/magnific-popup.css">
     {% endblock %}
     <script src="vendor/jquery/jquery-1.11.1.min.js"></script>
     <script src="vendor/jquery/jquery_ui/jquery-ui.min.js"></script>
@@ -82,11 +83,6 @@
                                         </li>
                                     {% endif %}
                                 {% endif %}
-                                {% if adminContext.activeModule.name == "dashboard" %}
-                                        <li class="crumb-active">
-                                            {{ adminContext.activeModule.title }}
-                                        </li>
-                                {% endif %}
                             {% endif %}
                         </ol>
 
@@ -112,10 +108,13 @@
 
         </div>
         {% for label, flashes in app.session.flashbag.all %}
-        {% for flash in flashes %}
-        <div class="notification-handler" data-type="{{ label }}" data-style="{{ label }}">{{ flash }}</div>
+            {% for flash in flashes %}
+            <div class="notification-handler" data-type="{{ label }}" data-style="{{ label }}">{{ flash }}</div>
+            {% endfor %}
         {% endfor %}
-        {% endfor %}
+
+        {{ include('@YAdmin/_elements/confirm-popup.html.twig') }}
+
         <script src="vendor/plugins/select2/select2.min.js"></script>
         <script src="vendor/plugins/holder/holder.min.js"></script>
         <script src="vendor/plugins/nestable/jquery.nestable.js"></script>
@@ -124,6 +123,7 @@
         <script src="vendor/plugins/globalize/globalize.min.js"></script>
         <script src="vendor/plugins/moment/moment.min.js"></script>
         <script src="vendor/plugins/datepicker/js/bootstrap-datetimepicker.min.js"></script>
+        <script src="vendor/plugins/magnific/jquery.magnific-popup.js"></script>
     {% endblock %}
     {% block javascripts %}
         <!-- Theme Javascript -->

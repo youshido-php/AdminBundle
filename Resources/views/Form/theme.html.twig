@@ -57,6 +57,16 @@
     {{- block('form_widget') -}}
 {%- endblock collection_widget -%}
 
+{%- block checkbox_widget -%}
+    <div style="margin-top: 10px">
+        <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+
+        {% if attr.label is defined %}
+            {{ attr.label }}
+        {% endif %}
+    </div>
+{%- endblock checkbox_widget -%}
+
 
 {%- block form_rows -%}
     {% for child in form %}

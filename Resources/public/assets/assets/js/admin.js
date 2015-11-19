@@ -1,3 +1,8 @@
+var titles = {
+    "success": "Success"
+};
+
+
 $(document).ready(function() {
     $('select').select2({
         minimumResultsForSearch: 8
@@ -51,9 +56,6 @@ $(document).ready(function() {
             "context": $("#stack-context")
         }
     };
-    var titles = {
-        "success": "Success"
-    };
 
     $('.notification-handler').each(function(index, element) {
         element = $(element);
@@ -62,18 +64,6 @@ $(document).ready(function() {
         var noteShadow = true;
         var noteOpacity = 1;
         var noteStack = "stack_top_right";
-        //var noteStack = "stack_bar_top";
-
-        function findWidth() {
-            if (noteStack == "stack_bar_top") {
-                return "100%";
-            }
-            if (noteStack == "stack_bar_bottom") {
-                return "70%";
-            } else {
-                return "320px";
-            }
-        }
 
         // Create new Notification
         new PNotify({
@@ -84,13 +74,8 @@ $(document).ready(function() {
             addclass: noteStack,
             type: noteStyle,
             stack: stacks[noteStack],
-            width: findWidth(),
-            delay: 1400,
-            buttons: {
-                closer_hover: false,
-                sticker: false,
-                sticker_hover: false
-            }
+            width: findWidth(noteStack),
+            delay: 1400
         });
 
     });
@@ -118,4 +103,104 @@ $(document).ready(function() {
             minimumInputLength: 1
         });
     });
+
+
+    var removeLink = null;
+    $('.js-remove-confirm').click(function (e) {
+        console.log('Click');
+        console.log(e);
+
+        if (!$(this).hasClass('js-ignore-confirm')) {
+            e.preventDefault();
+            openPopup('#confirm-popup');
+            removeLink = $(this);
+
+            return false;
+        }
+    });
+
+    $(document).on('click', '.js-close-popup', function (e) {
+        e.preventDefault();
+
+        removeLink = null;
+        closePopup();
+    });
+
+    $(document).on('click', '.js-confirm-action', function (e) {
+        e.preventDefault();
+
+        if (removeLink != null) {
+            setTimeout(function(){
+                var myEvt = document.createEvent('MouseEvents');
+                myEvt.initEvent('click', true, true);
+                removeLink.addClass('js-ignore-confirm').get(0).dispatchEvent(myEvt);
+            }, 100);
+        }
+
+        closePopup();
+    });
 });
+
+$.magnificPopup.instance._onFocusIn = function(e) {
+    // Do nothing if target element is select2 input
+    if( $(e.target).hasClass("select2-search__field") ) {
+        return true;
+    }
+    // Else call parent method
+    $.magnificPopup.proto._onFocusIn.call(this,e);
+};
+
+function closePopup() {
+    $.magnificPopup.instance.close();
+}
+
+function openPopup(popupId) {
+    $.magnificPopup.open({
+        removalDelay: 500,
+        items: {
+            src: popupId
+        },
+        callbacks: {
+            beforeOpen: function () {
+                this.st.mainClass = 'mfp-flipInY';
+            },
+            open: function () {
+
+            }
+        },
+        midClick: true
+    });
+}
+
+function showNotify(type, text)
+{
+
+    new PNotify({
+        title: titles[type],
+        text: text,
+        shadow: true,
+        opacity: 1,
+        addclass: "stack_top_right",
+        type: type,
+        stack: {
+            "dir1": "down",
+            "dir2": "left",
+            "push": "top",
+            "spacing1": 10,
+            "spacing2": 10
+        },
+        width: findWidth("stack_top_right"),
+        delay: 1400
+    });
+}
+
+function findWidth(noteStack) {
+    if (noteStack == "stack_bar_top") {
+        return "100%";
+    }
+    if (noteStack == "stack_bar_bottom") {
+        return "70%";
+    } else {
+        return "320px";
+    }
+}
