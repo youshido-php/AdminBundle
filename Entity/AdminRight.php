@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * AdminUserRight
  *
- * @ORM\Table(name="AdminRight")
+ * @ORM\Table(name="admin_roles")
  * @ORM\Entity
  */
 class AdminRight {

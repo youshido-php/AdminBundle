@@ -106,9 +106,16 @@ class BaseEntityController extends Controller
         $this->saveLastIds($module, $ids);
 
         $template     = empty($moduleConfig['actions']['default']['template']) ? '@YAdmin/List/default.html.twig' : $moduleConfig['actions']['default']['template'];
+
+        $additionalParameters = [];
+        foreach($request->query->getIterator() as $key  => $value){
+            $additionalParameters[$key] = $value;
+        }
+
         return $this->render($template, [
             'objects'      => $paginator,
             'moduleConfig' => $moduleConfig,
+            'tableTitle'   => isset($moduleConfig['actions']['default']['title']) ? $moduleConfig['actions']['default']['title'] : '',
             'action'       => 'default',
             'filters'      => $filterForm->createView(),
             'order'        => $order,
@@ -116,7 +123,7 @@ class BaseEntityController extends Controller
             'pager'        => [
                 'currentPage' => $pageNumber,
                 'route'       => $request->get('_route'),
-                'parameters'  => $request->attributes->get('_route_params'),
+                'parameters'  => array_merge($request->attributes->get('_route_params', []), $additionalParameters),
                 'pagesCount'  => ceil(count($paginator) / $perPageCount),
             ],
         ]);
@@ -155,6 +162,7 @@ class BaseEntityController extends Controller
     }
 
     public function duplicateAction($module, $id, Request $request)
+    public function duplicateAction($module, $id)
     {
         $this->get('adminContext')->setActiveModuleName($module);
         $moduleConfig = $this->get('adminContext')->getActiveModule();
@@ -183,6 +191,8 @@ class BaseEntityController extends Controller
                 $em->remove($object);
             }
             $em->flush();
+
+            $this->addFlash('success', 'Element was removed!');
         }
         return $this->redirectToRoute($moduleConfig['actions']['default']['route'], ['module' => $module]);
     }
@@ -204,7 +214,7 @@ class BaseEntityController extends Controller
         return 1;
     }
 
-    protected function exportAction($moduleConfig, Request $request)
+    protected function exportAction($moduleConfig)
     {
         $this->get('adminContext')->setActiveModuleName($moduleConfig);
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('export');
@@ -246,7 +256,6 @@ class BaseEntityController extends Controller
         $form = $this->buildForm($object, $moduleConfig);
         $form->handleRequest($request);
 
-        $errors = [];
         if ($form->isSubmitted()) {
             $this->callHandlersWithParams('validate', [$object, $request]);
             if ($form->isValid()) {
@@ -258,16 +267,17 @@ class BaseEntityController extends Controller
                 } else {
                     return $this->redirectToRoute($moduleConfig['actions']['edit']['route'], ['module' => $moduleConfig['name'], 'id' => $object->getId()]);
                 }
-            }else{
-                $errors = $form->getErrors(true);
             }
         }
+
         $this->callHandlersWithParams('render', [$object, $request]);
+
         $vars = array_merge($vars, [
             'object'       => $object,
+            'pageTitle'    => isset($moduleConfig['actions'][$actionName]['page_title']) ? $moduleConfig['actions'][$actionName]['page_title'] : '',
+            'actionName'   => $actionName,
             'moduleConfig' => $this->get('adminContext')->getActiveModuleForAction($actionName),
             'form'         => $form->createView(),
-            'errors'       => $errors
         ]);
 
         return $this->render('@YAdmin/List/view.html.twig', $vars);
@@ -313,7 +323,10 @@ class BaseEntityController extends Controller
 
     protected function buildForm($object, $config)
     {
-        $formBuilder = $this->createFormBuilder($object, ['allow_extra_fields' => true, 'attr' => ['enctype' => 'multipart/form-data']]);
+        $formBuilder = $this->createFormBuilder($object, ['allow_extra_fields' => true, 'attr' => [
+            'enctype'    => 'multipart/form-data',
+            'novalidate' => 'novalidate'
+        ]]);
 
         foreach ($config['columns'] as $column => $info) {
             if(!array_key_exists('entity', $info)){

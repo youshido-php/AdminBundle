@@ -68,7 +68,7 @@
                             {% endif %}
                         {% elseif columnInfo.type == "datetime" %}
                             {{ value ? value|date("m/d/Y H:i:s") : '' }}
-                        {% elseif columnInfo.type == "date" %}
+                        {% elseif columnInfo.type in ["picked_date", "date"] %}
                             {{ value ? value|date("m/d/Y") : '' }}
                         {% elseif columnInfo.type == "entity" and columnInfo.multiple is defined %}
                             {{ value|join(', ') }}
@@ -89,14 +89,14 @@
                         {% elseif columnInfo.type == "collection" %}
                         {% elseif columnInfo.type == "entity" %}
                             {{ value }}
-                        {% elseif columnInfo.type == "boolean" %}
+                        {% elseif columnInfo.type == "checkbox" %}
                             {% if value %}
                                 <span class="badge badge-success">yes</span>
                             {% else %}
                                 <span class="badge badge-default">no</span>
                             {% endif %}
                         {% else %}
-                            {{ value[:30] }}
+                            {{ value[:35] }}
                         {% endif %}
                     </td>
                 {% elseif tableConfig.submodules[columnName] is defined %}

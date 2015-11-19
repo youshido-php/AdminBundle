@@ -1,0 +1,7 @@
+{% if moduleConfig.header_actions is defined %}
+    {% for headerActionName, headerActionConf in moduleConfig.header_actions %}
+        <a class="btn btn-primary light btn-sm btn-rounded fw600 ml10" href="{{ path(headerActionConf.route) }}">
+            <i class="{{ headerActionConf.icon is defined ? headerActionConf.icon : '' }}"></i>{{ headerActionConf.title is defined ? headerActionConf.title : headerActionName|capitalize }}
+        </a>
+    {% endfor %}
+{% endif %}

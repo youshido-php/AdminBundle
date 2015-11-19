@@ -34,9 +34,9 @@ class DictionaryController extends BaseEntityController
     /**
      * @Route("/dictionary/{module}/export", name="admin.dictionary.export")
      */
-    public function exportAction($module, Request $request)
+    public function exportAction($module)
     {
-        return parent::exportAction($module, $request);
+        return parent::exportAction($module);
     }
 
     /**
@@ -86,17 +86,17 @@ class DictionaryController extends BaseEntityController
     /**
      * @Route("/dictionary/{module}/duplicate/{id}", name="admin.dictionary.duplicate")
      */
-    public function duplicateAction($module, $id, Request $request)
+    public function duplicateAction($module, $id)
     {
-        return parent::duplicateAction($module, $id, $request);
+        return parent::duplicateAction($module, $id);
     }
 
     /**
-     * @Route("/dictionary/{module}/remove", name="admin.dictionary.remove")
+     * @Route("/dictionary/{module}/{id}/remove", name="admin.dictionary.remove")
      */
-    public function removeAction($module, Request $request)
+    public function removeAction($module, Request $request, $id)
     {
-        return parent::removeAction($module, $request);
+        return parent::removeAction($module, $request, $id);
     }
 
     /**

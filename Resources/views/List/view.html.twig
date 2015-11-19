@@ -1,69 +1,56 @@
 {% extends '@YAdmin/_layout.html.twig' %}
 
 {% block content %}
-<div class="row">
-    <div class="panel">
-        {{ form_start(form, {'attr' : {'id' : 'form-list-view', 'class' : 'form-horizontal'}}) }}
+    <div class="row">
+        <div class="panel">
+            {{ form_start(form, {'attr' : {'id' : 'form-list-view', 'class' : 'form-horizontal'}}) }}
 
-        <div class="panel-heading">
-            {% block viewPanelHeading %}
-                <ul class="nav panel-tabs-border panel-tabs panel-tabs-left">
-                    {% for tabAlias, tabOptions in moduleConfig.tabs %}
-                        <li{% if loop.index == 1 %} class="active"{% endif %}><a href="#{{ tabAlias }}"
-                                                                                 data-toggle="tab">{{ tabOptions.title }}</a>
-                        </li>
-                    {% else %}
-                        <span class="panel-title">Object information</span>
-                    {% endfor %}
-                </ul>
-            {% endblock %}
-        </div>
-
-        <div class="panel-body">
-            <div class="tab-content pn br-n">
-                {% block viewPanelBody %}
-                    {% for tabAlias, tabOptions in moduleConfig.tabs %}
-                        <div id="{{ tabAlias }}" class="tab-pane{% if loop.index == 1 %} active{% endif %}">
-                            {{ include(tabOptions.template) }}
-                        </div>
-                    {% else %}
-                        {{ include('@YAdmin/_fragments/formFields.html.twig') }}
-
-                        {% if errors is defined %}
-                            {% for error in errors %}
-                                <div class="row">
-                                    <div class="col-md-2"></div>
-                                    <div class="col-md-8">
-                                        <h3 class="text-danger">{{ error.origin.config.name|capitalize }}: {{ error.message }}</h3>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endfor %}
+            <div class="panel-heading">
+                {% block viewPanelHeading %}
+                    <ul class="nav panel-tabs-border panel-tabs panel-tabs-left">
+                        {% for tabAlias, tabOptions in moduleConfig.tabs %}
+                            <li{% if loop.index == 1 %} class="active"{% endif %}><a href="#{{ tabAlias }}"
+                                                                                     data-toggle="tab">{{ tabOptions.title }}</a>
+                            </li>
+                        {% else %}
+                            <span class="panel-title">{{ pageTitle|default('Object information') }}</span>
+                        {% endfor %}
+                    </ul>
                 {% endblock %}
             </div>
-        </div>
-        <div class="panel-footer">
-            <div class="row">
-                <div class="col-md-2">
-                    <a href="{{ adminContext.getBackUrl() }}" class="btn btn-rounded btn-default btn-block button-back-handler pull-right"
-                            style="max-width: 100px;">
-                        <i class="fa fa-arrow-left"></i> Back
-                    </a>
-                </div>
-                <div class="col-md-8">
-                    <button type="submit" class="btn btn-rounded btn-primary btn-block light"
-                            style="max-width: 130px;">
-                        <i class="fa fa-save"></i> Save
-                    </button>
+
+            <div class="panel-body">
+                <div class="tab-content pn br-n">
+                    {% block viewPanelBody %}
+                        {% for tabAlias, tabOptions in moduleConfig.tabs %}
+                            <div id="{{ tabAlias }}" class="tab-pane{% if loop.index == 1 %} active{% endif %}">
+                                {{ include(tabOptions.template) }}
+                            </div>
+                        {% else %}
+                            {{ include('@YAdmin/Form/form.html.twig') }}
+                        {% endfor %}
+                    {% endblock %}
                 </div>
             </div>
+            <div class="panel-footer">
+                <div class="row">
+                    <div class="col-md-2">
+                        <a href="{{ adminContext.getBackUrl() }}"
+                           class="btn btn-rounded btn-default btn-block button-back-handler pull-right"
+                           style="max-width: 100px;">
+                            <i class="fa fa-arrow-left"></i> Back
+                        </a>
+                    </div>
+                    <div class="col-md-8">
+                        <button type="submit" class="btn btn-rounded btn-primary btn-block light"
+                                style="max-width: 130px;">
+                            <i class="fa fa-save"></i> Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
         </div>
-        {{ form_end(form) }}
     </div>
 
-    {% endblock %}
-
-    {% block javascripts %}
-        {{ parent() }}
-    {% endblock %}
+{% endblock %}

@@ -1,5 +1,0 @@
-{% if attributesForm is defined %}
-    {% for attr in attributes %}
-        {{ include("@YAdmin/_elements/_one_field.html.twig", { column: attr.name, info: attr, form: attributesForm, object: attributesForm.vars.value }) }}
-    {% endfor %}
-{% endif %}

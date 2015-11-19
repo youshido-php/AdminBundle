@@ -1,0 +1,192 @@
+{%- block form_row -%}
+    <div class="form-group {% if not form.vars.valid %}has-error{% endif %} ">
+        {{- form_label(form) -}}
+
+        {% set class = 'col-md-5' %}
+        {% set combinedAttr = form.vars.attr %}
+
+        {% if combinedAttr['data-column'] not in ['checkbox', 'form'] %}
+            {% set combinedAttr = combinedAttr|merge({ class: (combinedAttr.class is defined ? combinedAttr.class : '') ~ 'form-control' }) %}
+        {% endif %}
+        {% if combinedAttr['data-class'] is defined and combinedAttr['data-class'] == 'wide' %}
+            {% set class = 'col-md-10' %}
+        {% endif %}
+
+        {% if combinedAttr['data-column'] in ['date', 'image'] %}
+            {% set class = 'col-md-8' %}
+        {% elseif combinedAttr['data-column'] in ['wysiwyg', 'form'] %}
+            {% set class = 'col-md-10' %}
+        {% elseif combinedAttr['data-column'] == 'textarea' %}
+            {% set class = 'col-md-10' %}
+            {% set combinedAttr = combinedAttr|merge({ rows: 10 }) %}
+        {% elseif combinedAttr['data-column'] == 'html' %}
+            {% set class = 'col-md-10' %}
+            {% set combinedAttr = combinedAttr|merge({ style: (combinedAttr.style is defined ? combinedAttr.style : '') ~ 'display: none;' }) %}
+        {% endif %}
+
+        <div class="{{ class }}">
+            {{- form_widget(form, { attr : combinedAttr }) -}}
+            {{- form_errors(form) -}}
+        </div>
+    </div>
+{%- endblock form_row -%}
+
+{%- block form_widget -%}
+    {% if compound %}
+        {{- block('form_widget_compound') -}}
+    {% else %}
+        {{- block('form_widget_simple') -}}
+    {% endif %}
+
+    {% if attr.help is defined and attr.help %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ attr.help }}</p>
+        </span>
+    {% endif %}
+{%- endblock form_widget -%}
+
+{%- block form_errors -%}
+    {%- if errors|length > 0 -%}
+        {%- for error in errors -%}
+            <span class="help-block">{{ error.message }}</span>
+        {%- endfor -%}
+    {%- endif -%}
+{%- endblock form_errors -%}
+
+{%- block collection_widget -%}
+    {{- block('form_widget') -}}
+{%- endblock collection_widget -%}
+
+{%- block checkbox_widget -%}
+    <div style="margin-top: 10px">
+        <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+
+        {% if attr.label is defined %}
+            {{ attr.label }}
+        {% endif %}
+    </div>
+{%- endblock checkbox_widget -%}
+
+
+{%- block form_rows -%}
+    {% for child in form %}
+        {{- form_row(child) -}}
+    {% endfor %}
+{%- endblock form_rows -%}
+
+{%- block form_widget_compound -%}
+    {{- block('form_rows') -}}
+    {{- form_rest(form) -}}
+{%- endblock form_widget_compound -%}
+
+{%- block form_label -%}
+    {% set label_attr = label_attr|merge({ class : 'col-md-2 control-label'}) %}
+
+    {% if label is not same as(false) -%}
+        {% if not compound -%}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {%- endif -%}
+        {% if required -%}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+        {%- endif -%}
+        {% if label is empty -%}
+            {%- if label_format is not empty -%}
+                {% set label = label_format|replace({
+                    '%name%': name,
+                    '%id%': id,
+                }) %}
+            {%- else -%}
+                {% set label = name|humanize %}
+            {%- endif -%}
+        {%- endif -%}
+        <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>{{ translation_domain is same as(false) ? label : label|trans({}, translation_domain) }}</label>
+    {%- endif -%}
+{%- endblock form_label -%}
+
+{%- block html_widget -%}
+    {% set attr = attr|merge({ style: (attr.style is defined ? attr.style : '') ~ ' display: none;' }) %}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+
+    <div class="form-control" style="position:relative; width: 780px;height: 500px;">
+        <div id="{{ id }}-editor" style="position: absolute; top:0; left: 0; right: 0; bottom:0;">{{ value }} </div>
+    </div>
+
+    {% if attr.help is defined and attr.help %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ attr.help }}</p>
+        </span>
+    {% endif %}
+
+    <script>
+        $(function(){
+            var editor = ace.edit("{{ id }}-editor");
+            editor.setTheme("ace/theme/monokai");
+            editor.getSession().setMode("ace/mode/html");
+            editor.on('change', function() {
+                $('#{{ form.vars.id }}').val(editor.getValue());
+            });
+        });
+    </script>
+{%- endblock html_widget -%}
+
+{%- block picked_date_widget -%}
+    {%- set type = type|default('text') -%}
+    {% set attr = attr|merge({ class: (attr.class is defined ? attr.class : '') ~ ' form-control' }) %}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+
+    {% if attr.help is defined and attr.help %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ attr.help }}</p>
+        </span>
+    {% endif %}
+
+    <script>
+        $(document).ready(function() {
+            $('#{{ id }}').datetimepicker({
+                pickTime: false,
+                format: "YYYY-MM-DD"
+            });
+        });
+    </script>
+{%- endblock picked_date_widget -%}
+
+{%- block image_widget -%}
+    <div>
+        {% if data.pathname is defined and data.pathname %}
+            <img src="{{ data.pathname | imagine_filter('my_thumb') }}" style="width: 100px; background: repeat url('/bundles/yadmin/assets/assets/img/stock/bg-image.jpg')"/> <br/>
+        {% else %}
+            <small>no file</small>
+        {% endif %}
+    </div>
+
+    {% if attr.help is defined and attr.help %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ attr.help }}</p>
+        </span>
+    {% endif %}
+
+    <input type="file" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{%- endblock image_widget -%}
+
+{%- block wysiwyg_widget -%}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+
+    {% if attr.help is defined and attr.help %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ attr.help }}</p>
+        </span>
+    {% endif %}
+
+    <script>
+        $(function(){
+            $('#{{ id }}').redactor({
+                convertDivs: true,
+                cleanup: true,
+                minHeight: 200,
+                lang: 'en',
+                custom_css: ['css/main.css'],
+                base_href: "http://{{ app.request.baseUrl }}"
+            });
+        });
+    </script>
+{%- endblock wysiwyg_widget -%}

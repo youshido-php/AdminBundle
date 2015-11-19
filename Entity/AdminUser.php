@@ -11,7 +11,7 @@ use Youshido\DoctrineExtensionBundle\Traits\TimetrackableTrait;
 /**
  * AdminUser
  *
- * @ORM\Table(name="AdminUser")
+ * @ORM\Table(name="admin_user")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */
@@ -52,7 +52,7 @@ class AdminUser implements AdvancedUserInterface, \Serializable
 
     /**
      * @ORM\ManyToMany(targetEntity="AdminRight",cascade={"persist"})
-     * @ORM\JoinTable(name="AdminUserRight",
+     * @ORM\JoinTable(name="admin_user_roles",
      *      joinColumns={@ORM\JoinColumn(name="id_user", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="id_right", referencedColumnName="id")}
      *      )
@@ -161,7 +161,6 @@ class AdminUser implements AdvancedUserInterface, \Serializable
 
     public function getRoles()
     {
-        $roles = array('ROLE_SUPER_ADMIN');
         foreach ($this->getRights() as $right) {
             $roles[] = $right->getId();
         }

@@ -144,6 +144,14 @@ class ExcelExporter extends ContainerAware
             case $columnConfig['type'] == 'date':
                 return $value->format(!empty($columnConfig['format']) ? $columnConfig['format'] : 'd.m.Y H:i:s');
 
+            case $value instanceof \IteratorAggregate:
+                $parts = [];
+                foreach($value as $valueItem){
+                    $parts[] = $valueItem->__toString();
+                }
+                
+                return implode(', ', $parts);
+
             case is_object($value):
                 return $value->__toString();
 
