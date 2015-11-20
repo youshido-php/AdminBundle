@@ -1,18 +1,14 @@
 {% extends '@YAdmin/_layout.html.twig' %}
 
+{% form_theme filters '@YAdmin/Form/theme.html.twig' %}
+
 {% block content %}
     {% if moduleConfig.filters is defined %}
     <div class="panel">
         <div class="panel-heading clearfix">
-            {{ form_start(filters) }}
-            <span class="panel-title">
-                    {% for filterKey in moduleConfig.filters|keys %}
-                        {{ form_widget(filters[filterKey]) }}
-                    {% endfor %}
-            </span>
-            <span class="pull-right">
-                <button type="submit" class="btn btn-light btn-rounded btn-success btn-sm w100">Filter</button>
-            </span>
+            {{ form_start(filters, { attr: { style: 'margin-top: -3px' } }) }}
+                {{ form_rest(filters) }}
+                <button type="submit" style="margin-top: 15px" class="btn btn-light btn-rounded btn-success btn-sm w100 pull-right">Filter</button>
             {{ form_end(filters) }}
         </div>
     </div>

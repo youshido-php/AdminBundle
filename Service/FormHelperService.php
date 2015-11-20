@@ -33,7 +33,7 @@ class FormHelperService extends ContainerAware
             'attr' => $attr
         ]);
 
-        if (isset($info['title'])) {
+        if (isset($info['title']) && !isset($options['label'])) {
             $options['label'] = $info['title'];
         }
 

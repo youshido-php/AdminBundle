@@ -29,12 +29,13 @@ class BaseEntityController extends Controller
         $this->get('adminContext')->setActiveModuleName($module);
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('default');
 
-        $cachedFilterForm = $this->get('session')->get($this->getFilterCacheKey($module), []);
-        $filterForm = $this->createFilterForm($cachedFilterForm, $moduleConfig);
+        $cachedFilterForm = $this->prepareSavedFilterData($this->get('session')->get($this->getFilterCacheKey($module), []));
+        $filterForm       = $this->createFilterForm($cachedFilterForm, $moduleConfig);
+
         $filterForm->handleRequest($request);
         $filterData = $filterForm->isSubmitted() && $filterForm->isValid() ? $filterForm->getData() : $cachedFilterForm;
 
-        $this->get('session')->set($this->getFilterCacheKey($module), $filterData);
+        $this->get('session')->set($this->getFilterCacheKey($module), $this->prepareFiltersToSave($filterData));
 
         /**
          * @var QueryBuilder $qb
@@ -44,7 +45,7 @@ class BaseEntityController extends Controller
 
         if (!empty($filterData)) {
             foreach ($filterData as $key => $value) {
-                if($value){
+                if ($value) {
                     $qb->andWhere(sprintf('t.%s = :%s_query', $key, $key));
                     $qb->setParameter($key . '_query', $value);
                 }
@@ -54,7 +55,7 @@ class BaseEntityController extends Controller
         list($orderField, $order) = $this->getSavedOrderFields($module);
 
         $order      = $request->get('order', $order ?: (!empty($moduleConfig['sort']) ? $moduleConfig['sort'][1] : 'asc'));
-        $orderField = $request->get('orderField',  $orderField ?: (!empty($moduleConfig['sort']) ? $moduleConfig['sort'][0] : false));
+        $orderField = $request->get('orderField', $orderField ?: (!empty($moduleConfig['sort']) ? $moduleConfig['sort'][0] : false));
 
         if ($orderField) {
             if (!empty($moduleConfig['subviews'][$orderField])) {
@@ -68,7 +69,7 @@ class BaseEntityController extends Controller
                     $qb->orderBy($sort[0], $order);
                 }
             } else {
-                if(!empty($moduleConfig['columns'][$orderField]['sortable'])){
+                if (!empty($moduleConfig['columns'][$orderField]['sortable'])) {
                     if (!empty($moduleConfig['columns'][$orderField]['sortable']['join'])) {
                         $join = $moduleConfig['columns'][$orderField]['sortable']['join'];
                         $qb->leftJoin('t.' . $join[0], $join[1]);
@@ -76,7 +77,7 @@ class BaseEntityController extends Controller
 
                     $sort = $moduleConfig['columns'][$orderField]['sortable']['sort'];
                     $qb->orderBy($sort[0], $order);
-                }else{
+                } else {
                     $qb->orderBy('t.' . $orderField, $order);
                 }
             }
@@ -88,10 +89,10 @@ class BaseEntityController extends Controller
             $qb->where($moduleConfig['where']);
         }
 
-        if(!empty($moduleConfig['actions']['default']['handler'])){
-            $handlers = (array) $moduleConfig['actions']['default']['handler'];
+        if (!empty($moduleConfig['actions']['default']['handler'])) {
+            $handlers = (array)$moduleConfig['actions']['default']['handler'];
 
-            foreach($handlers as $handler){
+            foreach ($handlers as $handler) {
                 $qb = $this->get('adminContext')->prepareService($handler[0])->$handler[1]($qb);
             }
         }
@@ -105,10 +106,10 @@ class BaseEntityController extends Controller
         }
         $this->saveLastIds($module, $ids);
 
-        $template     = empty($moduleConfig['actions']['default']['template']) ? '@YAdmin/List/default.html.twig' : $moduleConfig['actions']['default']['template'];
+        $template = empty($moduleConfig['actions']['default']['template']) ? '@YAdmin/List/default.html.twig' : $moduleConfig['actions']['default']['template'];
 
         $additionalParameters = [];
-        foreach($request->query->getIterator() as $key  => $value){
+        foreach ($request->query->getIterator() as $key => $value) {
             $additionalParameters[$key] = $value;
         }
 
@@ -129,36 +130,109 @@ class BaseEntityController extends Controller
         ]);
     }
 
-    private function saveLastIds($module, $ids)
+    public function prepareFiltersToSave($filterData)
     {
-        $this->get('session')->set('admin.last_ids' . $module, $ids);
+        foreach($filterData as $filter => $filterItemData) {
+            if(is_object($filterItemData) && method_exists($filterItemData, 'getId')){
+                $filterData[$filter] = [
+                    'id' => $filterItemData->getId(),
+                    'class' => get_class($filterItemData)
+                ];
+            }
+        }
+
+        return $filterData;
     }
 
-    protected function getLastIds($module)
+    public function prepareSavedFilterData($filterData)
     {
-        return $this->get('session')->get('admin.last_ids' . $module, []);
+        foreach ($filterData as $filter => $filterItemData) {
+            if (is_array($filterItemData) && array_key_exists('class', $filterItemData)) {
+                $filterData[$filter] = $this->getDoctrine()->getManager()->getReference($filterItemData['class'], $filterItemData['id']);
+            }
+        }
+
+        return $filterData;
+    }
+
+    protected function getFilterCacheKey($module)
+    {
+        return sprintf('filers_%s', $module);
     }
 
     private function createFilterForm($filterData, $moduleConfig)
     {
-        /** @var FormBuilder $filtersBuilder */
-        $filtersBuilder = $this->get('form.factory')
+        /** @var FormBuilder $filtersFromBuilder */
+        $filtersFromBuilder = $this->get('form.factory')
             ->createNamedBuilder('filter', 'form', $filterData, [
-                'method' => 'get',
+                'method'          => 'get',
                 'csrf_protection' => false,
-                'attr' => ['class' => 'form form-inline']
+                'attr'            => ['class' => 'form form-inline']
             ]);
 
         if (!empty($moduleConfig['filters'])) {
-            foreach ($moduleConfig['filters'] as $key => $value) {
-                $options = $moduleConfig['columns'][$key];
-                $options['required'] = false;
-                $options['placeholder'] = $value['title'];
-                $this->get('admin.form.helper')->buildFormItem($key, $options, $filtersBuilder);
+            foreach ($moduleConfig['filters'] as $key => $filterOptions) {
+                $options                                   = array_merge_recursive($moduleConfig['columns'][$key], (array)$filterOptions);
+                $options['options']['required']            = false;
+                $options['options']['label']               = false;
+                $options['options']['attr']['placeholder'] = $filterOptions['title'];
+
+                $this->get('admin.form.helper')->buildFormItem($key, $options, $filtersFromBuilder);
             }
         }
 
-        return $filtersBuilder->getForm();
+        return $filtersFromBuilder->getForm();
+    }
+
+    private function getSavedOrderFields($module)
+    {
+        $saved = $this->get('session')->get(sprintf('%s_orders', $module), []);
+
+        return [
+            isset($saved['orderField']) ? $saved['orderField'] : null,
+            isset($saved['order']) ? $saved['order'] : null
+        ];
+    }
+
+    private function saveOrderFields($orderField, $order, $module)
+    {
+        $this->get('session')->set(sprintf('%s_orders', $module), [
+            'order'      => $order,
+            'orderField' => $orderField
+        ]);
+    }
+
+    protected function getPaginated($query, $pageNumber, $count = 20)
+    {
+        $query->setFirstResult(($pageNumber - 1) * $count)
+            ->setMaxResults($count);
+
+        $paginator = new Paginator($query);
+        $paginator->setUseOutputWalkers(false);
+
+        return $paginator;
+    }
+
+    protected function getPage(Request $request, $module)
+    {
+        $cacheKey = sprintf('admin_page_number_%s', $module);
+
+        if ($pageNumber = $request->get('pageNumber', false)) {
+            $this->get('session')->set($cacheKey, $pageNumber);
+
+            return $pageNumber;
+        } else {
+            if ($this->get('session')->has($cacheKey)) {
+                return (int)$this->get('session')->get($cacheKey);
+            }
+        }
+
+        return 1;
+    }
+
+    private function saveLastIds($module, $ids)
+    {
+        $this->get('session')->set('admin.last_ids' . $module, $ids);
     }
 
     public function duplicateAction($module, $id)
@@ -168,49 +242,39 @@ class BaseEntityController extends Controller
 
         if ($id) {
             $object = $this->getDoctrine()->getRepository($moduleConfig['entity'])->find($id);
-            $copy = clone $object;
+            $copy   = clone $object;
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($copy);
             $em->flush();
         }
 
-        return $this->redirectToRoute($moduleConfig['actions']['default']['route'], array('module' => $module));
+        return $this->redirectToRoute($moduleConfig['actions']['default']['route'], ['module' => $module]);
     }
 
-    public function removeAction($module, Request $request, $id) {
+    public function removeAction($module, Request $request, $id)
+    {
         $this->get('adminContext')->setActiveModuleName($module);
         $moduleConfig = $this->get('adminContext')->getActiveModule();
 
         if ($ids = $request->get('id')) {
-            $ids          = array($ids);
-            $entities = $this->getDoctrine()->getRepository($moduleConfig['entity'])->findBy(array('id' => $ids));
-            $em = $this->getDoctrine()->getManager();
-            foreach($entities as $object) {
+            $ids      = [$ids];
+            $entities = $this->getDoctrine()->getRepository($moduleConfig['entity'])->findBy(['id' => $ids]);
+            $em       = $this->getDoctrine()->getManager();
+            foreach ($entities as $object) {
                 $em->remove($object);
             }
             $em->flush();
 
             $this->addFlash('success', 'Element was removed!');
         }
+
         return $this->redirectToRoute($moduleConfig['actions']['default']['route'], ['module' => $module]);
     }
 
-    protected function getPage(Request $request, $module)
+    protected function getLastIds($module)
     {
-        $cacheKey = sprintf('admin_page_number_%s', $module);
-
-        if($pageNumber = $request->get('pageNumber', false)) {
-            $this->get('session')->set($cacheKey, $pageNumber);
-
-            return $pageNumber;
-        }else{
-            if($this->get('session')->has($cacheKey)){
-                return (int) $this->get('session')->get($cacheKey);
-            }
-        }
-
-        return 1;
+        return $this->get('session')->get('admin.last_ids' . $module, []);
     }
 
     protected function exportAction($moduleConfig)
@@ -224,7 +288,7 @@ class BaseEntityController extends Controller
         $response->headers->set('Cache-Control', 'private');
         $response->headers->set('Content-type', mime_content_type($filename));
         $response->headers->set('Content-Disposition',
-            'attachment; filename="' . (new \DateTime())->format('Y.m.d H:i:s'). '.' . pathinfo($filename, PATHINFO_EXTENSION) . '";');
+            'attachment; filename="' . (new \DateTime())->format('Y.m.d H:i:s') . '.' . pathinfo($filename, PATHINFO_EXTENSION) . '";');
         $response->headers->set('Content-length', filesize($filename));
 
         $response->sendHeaders();
@@ -282,26 +346,6 @@ class BaseEntityController extends Controller
         return $this->render('@YAdmin/List/view.html.twig', $vars);
     }
 
-    protected function callHandlersWithParams($eventName, $params)
-    {
-        $moduleConfig = $this->get('adminContext')->getActiveModuleForAction($eventName);
-        $result       = array();
-        if (!empty($moduleConfig['handlers'][$eventName])) {
-            if (!is_array($moduleConfig['handlers'][$eventName])) {
-                throw new \RuntimeException('Invalid configuration for handlers for ' . $eventName);
-            }
-            foreach ($moduleConfig['handlers'][$eventName] as $handler) {
-                $service = $this->get(substr($handler[0], 1));
-                if (empty($handler[1])) $handler[1] = Inflector::camelize(str_replace('.', ' ', $eventName)) . 'Handler';
-                $res = call_user_func_array(array($service, $handler[1]), $params);
-                if ($res) {
-                    $result = array_merge($result, (array)$res);
-                }
-            }
-        }
-        return $result;
-    }
-
     protected function getOrCreateObjectFromRequest(Request $request)
     {
         $moduleConfig = $this->get('adminContext')->getActiveModule();
@@ -313,11 +357,25 @@ class BaseEntityController extends Controller
         }
     }
 
-    protected function saveValidObject($object)
+    protected function callHandlersWithParams($eventName, $params)
     {
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($object);
-        $em->flush();
+        $moduleConfig = $this->get('adminContext')->getActiveModuleForAction($eventName);
+        $result       = [];
+        if (!empty($moduleConfig['handlers'][$eventName])) {
+            if (!is_array($moduleConfig['handlers'][$eventName])) {
+                throw new \RuntimeException('Invalid configuration for handlers for ' . $eventName);
+            }
+            foreach ($moduleConfig['handlers'][$eventName] as $handler) {
+                $service = $this->get(substr($handler[0], 1));
+                if (empty($handler[1])) $handler[1] = Inflector::camelize(str_replace('.', ' ', $eventName)) . 'Handler';
+                $res = call_user_func_array([$service, $handler[1]], $params);
+                if ($res) {
+                    $result = array_merge($result, (array)$res);
+                }
+            }
+        }
+
+        return $result;
     }
 
     protected function buildForm($object, $config)
@@ -328,7 +386,7 @@ class BaseEntityController extends Controller
         ]]);
 
         foreach ($config['columns'] as $column => $info) {
-            if(!array_key_exists('entity', $info)){
+            if (!array_key_exists('entity', $info)) {
                 $info['entity'] = $config['entity'];
             }
 
@@ -336,40 +394,14 @@ class BaseEntityController extends Controller
             $this->get('admin.form.helper')->buildFormItem($column, $info, $formBuilder, $object);
         }
         $this->callHandlersWithParams('form.build', [$object, $formBuilder]);
+
         return $formBuilder->getForm();
     }
 
-    protected function getPaginated($query, $pageNumber, $count = 20)
+    protected function saveValidObject($object)
     {
-        $query->setFirstResult(($pageNumber - 1) * $count)
-            ->setMaxResults($count);
-
-        $paginator = new Paginator($query);
-        $paginator->setUseOutputWalkers(false);
-
-        return $paginator;
-    }
-
-    protected function getFilterCacheKey($module)
-    {
-        return sprintf('filers_%s', $module);
-    }
-
-    private function saveOrderFields($orderField, $order, $module)
-    {
-        $this->get('session')->set(sprintf('%s_orders', $module), [
-            'order'      => $order,
-            'orderField' => $orderField
-        ]);
-    }
-
-    private function getSavedOrderFields($module)
-    {
-        $saved = $this->get('session')->get(sprintf('%s_orders', $module), []);
-
-        return [
-            isset($saved['orderField']) ? $saved['orderField'] : null,
-            isset($saved['order']) ? $saved['order'] : null
-        ];
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($object);
+        $em->flush();
     }
 }
