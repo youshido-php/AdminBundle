@@ -28,6 +28,9 @@ class BaseEntityController extends Controller
     {
         $this->get('adminContext')->setActiveModuleName($module);
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('default');
+        if (!$moduleConfig) {
+            return $this->redirectToRoute('admin.dashboard');
+        }
 
         $cachedFilterForm = $this->prepareSavedFilterData($this->get('session')->get($this->getFilterCacheKey($module), []));
         $filterForm       = $this->createFilterForm($cachedFilterForm, $moduleConfig);
