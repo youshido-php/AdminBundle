@@ -28,9 +28,7 @@ class BaseEntityController extends Controller
     {
         $this->get('adminContext')->setActiveModuleName($module);
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('default');
-        if (!$moduleConfig) {
-            return $this->redirectToRoute('admin.dashboard');
-        }
+        $this->checkModuleConfig($moduleConfig);
 
         $cachedFilterForm = $this->prepareSavedFilterData($this->get('session')->get($this->getFilterCacheKey($module), []));
         $filterForm       = $this->createFilterForm($cachedFilterForm, $moduleConfig);
@@ -305,6 +303,7 @@ class BaseEntityController extends Controller
     {
         $this->get('adminContext')->setActiveModuleName($moduleConfig);
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction($actionName);
+        $this->checkModuleConfig($moduleConfig);
 
         if (empty($moduleConfig['actions'][$actionName])) {
             return $this->redirectToRoute('admin.dashboard');
@@ -407,4 +406,33 @@ class BaseEntityController extends Controller
         $em->persist($object);
         $em->flush();
     }
+
+    private function checkModuleConfig(&$moduleConfig)
+    {
+        if (!$moduleConfig) {
+            throw new Exception('Empty module config');
+        }
+
+        if (!isset($moduleConfig['columns'])) {
+            throw new Exception("Can't find parameter 'columns'  in structure");
+        }
+
+        if (!isset($moduleConfig['actions']) || !isset($moduleConfig['actions']['default'])) {
+            $moduleConfig['actions'] = [
+                'default'   => ['route'=>'admin.dictionary.default', 'title'=>'Default'],
+                'add'       => ['route'=>'admin.dictionary.add', 'title'=>'Add'],
+                'edit'      => ['route'=>'admin.dictionary.edit', 'title'=>'Edit'],
+                'remove'    => ['route'=>'admin.dictionary.remove', 'title'=>'Remove'],
+            ];
+        }
+
+        if (!isset($moduleConfig['actions']['default'])) {
+            throw new Exception("Can't find  parameter action.default in structure");
+        }
+
+        if (!isset($moduleConfig['actions']['default']['show'])) {
+            $moduleConfig['actions']['default']['show'] = array_keys($moduleConfig['columns']);
+        }
+    }
+
 }
