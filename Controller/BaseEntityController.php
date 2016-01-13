@@ -320,7 +320,7 @@ class BaseEntityController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $this->callHandlersWithParams('validate', [$object, $request]);
+            $this->callHandlersWithParams('validate', [$form, $object, $request]);
             if ($form->isValid()) {
                 $this->callHandlersWithParams('save', [$object, $request]);
                 $this->saveValidObject($object);
