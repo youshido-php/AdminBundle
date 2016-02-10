@@ -12,7 +12,7 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     {% block title %}<title>{{ adminContext.name }} - Admin</title>{% endblock %}
-    <base href="http://{{ app.request.host }}/bundles/yadmin/assets/"/>
+    <base href="{{ app.request.scheme }}://{{ app.request.host }}/bundles/yadmin/assets/"/>
     {% block stylesheets %}
         <!-- Required Plugin CSS -->
         <link rel="stylesheet" type="text/css" href="vendor/plugins/tagmanager/tagmanager.css">
