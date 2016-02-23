@@ -15,7 +15,6 @@
     "php": ">=5.4",
     "symfony/framework-bundle": "~2.3|~3.0",
     "doctrine/doctrine-bundle": "~1.3",
-    "youshido/doctrine-extension" : "~1.1.9",
     "youshido/uploadable" : "~1.1"
   },
   "autoload": {
