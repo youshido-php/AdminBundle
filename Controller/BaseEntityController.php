@@ -26,8 +26,8 @@ class BaseEntityController extends Controller
 
     public function defaultAction(Request $request, $module, $pageNumber = 1)
     {
-        $this->get('adminContext')->setActiveModuleName($module);
-        $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('default');
+        $this->get('admin.context')->setActiveModuleName($module);
+        $moduleConfig = $this->get('admin.context')->getActiveModuleForAction('default');
 
         $cachedFilterForm = $this->prepareSavedFilterData($this->get('session')->get($this->getFilterCacheKey($module), []));
         $filterForm       = $this->createFilterForm($cachedFilterForm, $moduleConfig);
@@ -93,7 +93,7 @@ class BaseEntityController extends Controller
             $handlers = (array)$moduleConfig['actions']['default']['handler'];
 
             foreach ($handlers as $handler) {
-                $qb = $this->get('adminContext')->prepareService($handler[0])->$handler[1]($qb);
+                $qb = $this->get('admin.context')->prepareService($handler[0])->$handler[1]($qb);
             }
         }
 
@@ -237,8 +237,8 @@ class BaseEntityController extends Controller
 
     public function duplicateAction($module, $id)
     {
-        $this->get('adminContext')->setActiveModuleName($module);
-        $moduleConfig = $this->get('adminContext')->getActiveModule();
+        $this->get('admin.context')->setActiveModuleName($module);
+        $moduleConfig = $this->get('admin.context')->getActiveModule();
 
         if ($id) {
             $object = $this->getDoctrine()->getRepository($moduleConfig['entity'])->find($id);
@@ -254,8 +254,8 @@ class BaseEntityController extends Controller
 
     public function removeAction($module, Request $request, $id)
     {
-        $this->get('adminContext')->setActiveModuleName($module);
-        $moduleConfig = $this->get('adminContext')->getActiveModule();
+        $this->get('admin.context')->setActiveModuleName($module);
+        $moduleConfig = $this->get('admin.context')->getActiveModule();
 
         if ($ids = $request->get('id')) {
             $ids      = [$ids];
@@ -279,10 +279,10 @@ class BaseEntityController extends Controller
 
     protected function exportAction($moduleConfig)
     {
-        $this->get('adminContext')->setActiveModuleName($moduleConfig);
-        $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('export');
+        $this->get('admin.context')->setActiveModuleName($moduleConfig);
+        $moduleConfig = $this->get('admin.context')->getActiveModuleForAction('export');
 
-        $filename = $this->get('adminExcelExporter')->export($moduleConfig);
+        $filename = $this->get('admin.exporter.excel')->export($moduleConfig);
 
         $response = new Response();
         $response->headers->set('Cache-Control', 'private');
@@ -300,8 +300,8 @@ class BaseEntityController extends Controller
 
     protected function processDetailAction($moduleConfig, $object = null, Request $request, $actionName)
     {
-        $this->get('adminContext')->setActiveModuleName($moduleConfig);
-        $moduleConfig = $this->get('adminContext')->getActiveModuleForAction($actionName);
+        $this->get('admin.context')->setActiveModuleName($moduleConfig);
+        $moduleConfig = $this->get('admin.context')->getActiveModuleForAction($actionName);
 
         if (empty($moduleConfig['actions'][$actionName])) {
             return $this->redirectToRoute('admin.dashboard');
@@ -309,7 +309,7 @@ class BaseEntityController extends Controller
 
         if (!$object) $object = $this->getOrCreateObjectFromRequest($request);
 
-        $moduleConfig = $this->get('adminContext')->getActiveModuleForAction($actionName);
+        $moduleConfig = $this->get('admin.context')->getActiveModuleForAction($actionName);
 
         if (!$this->get('admin.security')->isGranted($object, $moduleConfig, $actionName)) {
             throw new AccessDeniedException();
@@ -339,7 +339,7 @@ class BaseEntityController extends Controller
             'object'       => $object,
             'pageTitle'    => isset($moduleConfig['actions'][$actionName]['page_title']) ? $moduleConfig['actions'][$actionName]['page_title'] : '',
             'actionName'   => $actionName,
-            'moduleConfig' => $this->get('adminContext')->getActiveModuleForAction($actionName),
+            'moduleConfig' => $this->get('admin.context')->getActiveModuleForAction($actionName),
             'form'         => $form->createView(),
         ]);
 
@@ -348,7 +348,7 @@ class BaseEntityController extends Controller
 
     protected function getOrCreateObjectFromRequest(Request $request)
     {
-        $moduleConfig = $this->get('adminContext')->getActiveModule();
+        $moduleConfig = $this->get('admin.context')->getActiveModule();
 
         if ($id = $request->get('id')) {
             return $this->getDoctrine()->getRepository($moduleConfig['entity'])->find($id);
@@ -359,7 +359,7 @@ class BaseEntityController extends Controller
 
     protected function callHandlersWithParams($eventName, $params)
     {
-        $moduleConfig = $this->get('adminContext')->getActiveModuleForAction($eventName);
+        $moduleConfig = $this->get('admin.context')->getActiveModuleForAction($eventName);
         $result       = [];
         if (!empty($moduleConfig['handlers'][$eventName])) {
             if (!is_array($moduleConfig['handlers'][$eventName])) {

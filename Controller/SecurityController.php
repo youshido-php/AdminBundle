@@ -61,7 +61,7 @@ class SecurityController extends Controller {
      */
     public function newUserAction(Request $request)
     {
-        $adminContext = $this->get('adminContext');
+        $adminContext = $this->get('admin.context');
         $config = $adminContext->getActiveModuleForAction('add', 'admin-users');
 
         /** @var AdminUser $user */
@@ -108,11 +108,11 @@ class SecurityController extends Controller {
 
         $vars = [
             'object'       => $user,
-            'moduleConfig' => $this->get('adminContext')->getActiveModuleForAction('create'),
+            'moduleConfig' => $this->get('admin.context')->getActiveModuleForAction('create'),
             'form'         => $form->createView(),
         ];
 
-        return $this->render('@YAdmin/Security/new_user.html.twig', $vars);
+        return $this->render('@YAdmin/Security/new-user.html.twig', $vars);
     }
 
 }

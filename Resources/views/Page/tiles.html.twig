@@ -1,4 +1,4 @@
-{% extends '@YAdmin/_layout.html.twig' %}
+{% extends '@YAdmin/layout.html.twig' %}
 
 {% block content %}
     <div class="row mb10">
@@ -12,7 +12,7 @@
                             <h1 class="fs26 mbn">{{ object.alias }}</h1>
                             <h6 class="text-primary-light">
                                 {% if moduleConfig.actions is defined %}
-                                    {{ include('@YAdmin/_elements/_object_actions.html.twig', {tableConfig: moduleConfig, actions: moduleConfig.actions}) }}
+                                    {{ include('@YAdmin/_elements/object-actions.html.twig', {tableConfig: moduleConfig, actions: moduleConfig.actions}) }}
                                 {% endif %}
                             </h6>
                         </div>

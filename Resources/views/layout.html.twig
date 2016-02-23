@@ -36,16 +36,16 @@
     <script src="vendor/plugins/redactor/redactor.min.js" type="text/javascript" charset="utf-8"></script>
     <link rel="stylesheet" href="vendor/plugins/redactor/redactor.css">
 
-    {{ include('@YAdmin/_additional_css.html.twig') }}
+    {{ include('@YAdmin/additional-css.html.twig') }}
 </head>
 {% block bodyTags %}
-    {{ include('@YAdmin/_elements/_body_start.html.twig') }}
+    {{ include('@YAdmin/_elements/body-start.html.twig') }}
     {% block body %}
         <div id="main">
 
-            {{ include('@YAdmin/_header.html.twig') }}
+            {{ include('@YAdmin/header.html.twig') }}
 
-            {{ include("@YAdmin/_left_menu.html.twig") }}
+            {{ include("@YAdmin/left-menu.html.twig") }}
             <!-- Start: Content-Wrapper -->
             <section id="content_wrapper">
 

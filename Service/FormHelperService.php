@@ -11,13 +11,15 @@ namespace Youshido\AdminBundle\Service;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-class FormHelperService extends ContainerAware
+class FormHelperService
 {
+
+    use ContainerAwareTrait;
 
     public function buildFormItem($column, $info, FormBuilder $formBuilder, $object = null)
     {
@@ -52,7 +54,7 @@ class FormHelperService extends ContainerAware
                             $handlers = (array)$info['handler'];
 
                             foreach ($handlers as $handler) {
-                                $queryBuilder = $this->container->get('adminContext')
+                                $queryBuilder = $this->container->get('admin.context')
                                     ->prepareService($handler[0])->$handler[1]($queryBuilder);
                             }
                         }

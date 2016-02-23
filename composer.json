@@ -13,11 +13,10 @@
   ],
   "require": {
     "php": ">=5.4",
-    "symfony/framework-bundle": "~2.3",
+    "symfony/framework-bundle": "~2.3|~3.0",
     "doctrine/doctrine-bundle": "~1.3",
-    "symfony/form": "~2.3",
-    "youshido/doctrine-extension" : "*",
-    "youshido/uploadable" : "*"
+    "youshido/doctrine-extension" : "~1.1.9",
+    "youshido/uploadable" : "~1.1"
   },
   "autoload": {
     "psr-4": { "Youshido\\AdminBundle\\": "" }

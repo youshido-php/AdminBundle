@@ -10,7 +10,7 @@ use Symfony\Component\Yaml\Yaml;
 class DefaultController extends Controller {
 
     public function indexAction() {
-        $this->get('adminContext')->setActiveModuleName('dashboard');
+        $this->get('admin.context')->setActiveModuleName('dashboard');
 
         //$companies  = $this->getDoctrine()->getRepository('AppBundle:Company')->getDashboardList();
         //$therapists = $this->getDoctrine()->getRepository('AppBundle:Therapist')->findAll();
@@ -24,14 +24,14 @@ class DefaultController extends Controller {
         //            'type'    => 'table',
         //            'actions' => true,
         //            'objects' => $companies,
-        //            'config'  => $this->get('adminContext')->getActiveModuleForAction('dashboard', 'company'),
+        //            'config'  => $this->get('admin.context')->getActiveModuleForAction('dashboard', 'company'),
         //        ],
         //        'therapist' => [
         //            'title'   => 'Recent Therapists',
         //            'type'    => 'table',
         //            'actions' => true,
         //            'objects' => $therapists,
-        //            'config'  => $this->get('adminContext')->getActiveModuleForAction('dashboard', 'therapist'),
+        //            'config'  => $this->get('admin.context')->getActiveModuleForAction('dashboard', 'therapist'),
         //        ],
             ],
         ]

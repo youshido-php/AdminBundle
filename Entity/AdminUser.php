@@ -4,9 +4,8 @@ namespace Youshido\AdminBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
-use Youshido\DoctrineExtensionBundle\Traits\TimetrackableTrait;
+use Youshido\AdminBundle\Traits\TimetrackableTrait;
 
 /**
  * AdminUser
@@ -17,6 +16,7 @@ use Youshido\DoctrineExtensionBundle\Traits\TimetrackableTrait;
  */
 class AdminUser implements AdvancedUserInterface, \Serializable
 {
+
     use TimetrackableTrait;
 
     /**

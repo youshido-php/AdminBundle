@@ -52,8 +52,8 @@ class DictionaryController extends BaseEntityController
      */
     public function deleteAttributeFile($module, $id, Request $request)
     {
-        $this->get('adminContext')->setActiveModuleName($module);
-        $moduleConfig = $this->get('adminContext')->getActiveModule();
+        $this->get('admin.context')->setActiveModuleName($module);
+        $moduleConfig = $this->get('admin.context')->getActiveModule();
 
         if (($object = $this->getDoctrine()->getRepository($moduleConfig['entity'])->find($id)) && ($path = $request->get('path'))) {
             /**
@@ -108,8 +108,8 @@ class DictionaryController extends BaseEntityController
     {
         if($request->getMethod() == 'POST' && ($ids = $request->get('ids', []))){
 
-            $this->get('adminContext')->setActiveModuleName($module);
-            $moduleConfig = $this->get('adminContext')->getActiveModule();
+            $this->get('admin.context')->setActiveModuleName($module);
+            $moduleConfig = $this->get('admin.context')->getActiveModule();
 
             $query = $this->getDoctrine()->getRepository($moduleConfig['entity'])
                 ->createQueryBuilder('t');

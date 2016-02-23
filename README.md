@@ -4,7 +4,6 @@
 ``` console
 composer require youshido/admin
 composer require liip/imagine-bundle
-composer require stof/doctrine-extensions-bundle
 ```
 
 ### 2. Enable bundles:
@@ -37,7 +36,7 @@ php app/console generate:bundle --namespace=AdminBundle --bundle-name=AdminBundl
 */
 public function indexAction()
 {
-  $this->get('adminContext')->setActiveModuleName('dashboard');
+  $this->get('admin.context')->setActiveModuleName('dashboard');
 
   return $this->render('YAdminBundle:Default:index.html.twig',
       [
@@ -94,7 +93,7 @@ twig:
     //...
 
     globals:
-        adminContext: @adminContext
+        adminContext: '@admin.context'
 ```
 
 ### 7. Add to your security.yml
@@ -124,8 +123,8 @@ twig:
             provider: admin_provider
             context: admin
             form_login:
-              login_path: admin.login
-              check_path: admin.login_check
+                login_path: admin.login
+                check_path: admin.login_check
             logout:
                 path:   admin.logout
                 target: /admin

@@ -7,11 +7,12 @@
 
 namespace Youshido\AdminBundle\Service;
 
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-use Symfony\Component\DependencyInjection\ContainerAware;
-
-class Security extends ContainerAware
+class Security
 {
+
+    use ContainerAwareTrait;
 
     public function isGranted($object, $moduleConfig, $actionName)
     {
@@ -49,7 +50,7 @@ class Security extends ContainerAware
     public function checkServices($object, $services)
     {
         foreach ((array)$services as $service) {
-            if (!$this->container->get('adminContext')->prepareService($service[0])->$service[1]($object)) {
+            if (!$this->container->get('admin.context')->prepareService($service[0])->$service[1]($object)) {
                 return false;
             }
         }

@@ -1,4 +1,4 @@
-{% extends '@YAdmin/_layout.html.twig' %}
+{% extends '@YAdmin/layout.html.twig' %}
 
 {% form_theme filters '@YAdmin/Form/theme.html.twig' %}
 
@@ -16,7 +16,7 @@
 
     {% block list_panel %}
         <div class="panel">
-            {% if adminContext.activeModule.batchs is defined %}
+            {% if admin.context.activeModule.batchs is defined %}
                 <form method="post" action="#">
             {% endif %}
                     <div class="panel-heading clearfix">
@@ -36,12 +36,12 @@
                                     <i class="fa fa-file-excel-o pr5"></i>Export</a>
                             {% endif %}
 
-                            {{ include('@YAdmin/_fragments/header-actions.html.twig') }}
+                            {{ include('@YAdmin/_elements/header-actions.html.twig') }}
                         </span>
                     </div>
                     <div class="panel-body pn">
                         <div class="bs-component">
-                            {{ include('@YAdmin/_elements/_table_body.html.twig', { tableConfig: moduleConfig, actions: moduleConfig.actions }) }}
+                            {{ include('@YAdmin/_elements/table-body.html.twig', { tableConfig: moduleConfig, actions: moduleConfig.actions }) }}
                         </div>
                     </div>
                     {% if pager.pagesCount and pager.pagesCount > 1 or adminContext.activeModule.batchs is defined %}

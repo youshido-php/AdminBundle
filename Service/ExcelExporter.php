@@ -12,17 +12,19 @@ use Doctrine\ORM\QueryBuilder;
 use ExcelAnt\Adapter\PhpExcel\Writer\PhpExcelWriter\Excel5;
 use ExcelAnt\Adapter\PhpExcel\Writer\WriterFactory;
 use ExcelAnt\Table\Label;
-use Symfony\Component\DependencyInjection\ContainerAware,
-    ExcelAnt\Adapter\PhpExcel\Workbook\Workbook,
-    ExcelAnt\Adapter\PhpExcel\Sheet\Sheet,
-    ExcelAnt\Adapter\PhpExcel\Writer\Writer,
-    ExcelAnt\Table\Table,
-    ExcelAnt\Coordinate\Coordinate;
+use ExcelAnt\Adapter\PhpExcel\Workbook\Workbook;
+use ExcelAnt\Adapter\PhpExcel\Sheet\Sheet;
+use ExcelAnt\Adapter\PhpExcel\Writer\Writer;
+use ExcelAnt\Table\Table;
+use ExcelAnt\Coordinate\Coordinate;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
-class ExcelExporter extends ContainerAware
+class ExcelExporter
 {
+    use ContainerAwareTrait;
+
     const PAGE_LIMIT = 100;
 
     /**
