@@ -9,23 +9,14 @@ namespace Youshido\AdminBundle\Form\Type;
 
 
 use Symfony\Component\Form\AbstractType;
+use Youshido\UploadableBundle\Type\FileType;
 
 class ImageType extends AbstractType
 {
 
     public function getParent()
     {
-        return 'youshido_file';
+        return FileType::class;
     }
 
-
-    /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
-     */
-    public function getName()
-    {
-        return 'image';
-    }
 }

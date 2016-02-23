@@ -60,19 +60,20 @@
 
                     <td class="table_cell_{{ columnInfo.type|default('text') }} table_cell_{{ columnName }}">
                         {% set value = attribute(object, columnName) %}
+
                         {% if columnName in ["title", "objectTitle"] %}
                             {% if actions.edit is defined %}
                                 <a href="{{ path(actions.edit.route, {'id' : object.id, 'module': tableConfig.name }) }}" class="fw600">{{ value }}</a>
                             {% else %}
                                 <span class="fw600">{{ value }}</span>
                             {% endif %}
-                        {% elseif columnInfo.type == "datetime" %}
+                        {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\DatetimeType" %}
                             {{ value ? value|date("m/d/Y H:i:s") : '' }}
-                        {% elseif columnInfo.type in ["picked_date", "date"] %}
+                        {% elseif columnInfo.type in ["Youshido\\AdminBundle\\Form\\Type\\PickedDateType", "Symfony\\Component\\Form\\Extension\\Core\\Type\\DateType"] %}
                             {{ value ? value|date("m/d/Y") : '' }}
-                        {% elseif columnInfo.type == "entity" and columnInfo.multiple is defined %}
+                        {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\EntityType" and columnInfo.multiple is defined %}
                             {{ value|join(', ') }}
-                        {% elseif columnInfo.type == "file" %}
+                        {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\FileType" %}
                             {% set path = attribute(object, columnName ~ "Path") %}
                             {% if path %}
                                 <a href="{{ path }}" target="_blank">view file</a>
@@ -87,9 +88,9 @@
                                 <small>no image</small>
                             {% endif %}
                         {% elseif columnInfo.type == "collection" %}
-                        {% elseif columnInfo.type == "entity" %}
+                        {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\EntityType" %}
                             {{ value }}
-                        {% elseif columnInfo.type == "checkbox" %}
+                        {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\CheckboxType" %}
                             {% if value %}
                                 <span class="badge badge-success">yes</span>
                             {% else %}

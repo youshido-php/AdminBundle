@@ -10,16 +10,14 @@ namespace Youshido\AdminBundle\Controller;
 
 
 use Doctrine\Common\Inflector\Inflector;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransformer;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Youshido\AdminBundle\Service\AdminContext;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 
 class BaseEntityController extends Controller
 {
@@ -164,7 +162,7 @@ class BaseEntityController extends Controller
     {
         /** @var FormBuilder $filtersFromBuilder */
         $filtersFromBuilder = $this->get('form.factory')
-            ->createNamedBuilder('filter', 'form', $filterData, [
+            ->createNamedBuilder('filter', FormType::class, $filterData, [
                 'method'          => 'get',
                 'csrf_protection' => false,
                 'attr'            => ['class' => 'form form-inline']
@@ -391,7 +389,7 @@ class BaseEntityController extends Controller
             }
 
 
-            $this->get('admin.form.helper')->buildFormItem($column, $info, $formBuilder, $object);
+            $this->get('admin.form.helper')->buildFormItem($column, $info, $formBuilder);
         }
         $this->callHandlersWithParams('form.build', [$object, $formBuilder]);
 

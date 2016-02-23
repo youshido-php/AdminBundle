@@ -5,43 +5,36 @@ namespace Youshido\AdminBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
 use Youshido\AdminBundle\Entity\AdminUser;
 
-class SecurityController extends Controller {
+class SecurityController extends Controller
+{
     /**
      * @Route("/login", name="admin.login")
      */
-    public function loginAction() {
-
-        //$admin = new AdminUser();
-        //$admin->setLogin('admin');
-        //$admin->setPassword('1');
-        //$password = $this->get('security.encoder_factory')->getEncoder($admin)->encodePassword($admin->getPassword(), $admin->getSalt());
-        //$admin->setPassword($password);
-        //
-        //$admin->setIsActive(true);
-        //$m = $this->getDoctrine()->getManager();
-        //$m->persist($admin);
-        //$m->flush();
-
+    public function loginAction()
+    {
         $authenticationUtils = $this->get('security.authentication_utils');
         $error               = $authenticationUtils->getLastAuthenticationError();
         $lastUsername        = $authenticationUtils->getLastUsername();
-        if ($this->container->has('profiler')) {
-            //$this->container->get('profiler')->disable();
-        }
-        return $this->render('@YAdmin/Security/login.html.twig', array(
+
+        return $this->render('@YAdmin/Security/login.html.twig', [
             'lastUsername' => $lastUsername,
             'loginError'   => $error,
-        ));
+        ]);
     }
 
     /**
      * @Route("/login_check", name="admin.login_check")
      */
-    public function loginCheckAction() {
+    public function loginCheckAction()
+    {
 
     }
 
@@ -49,11 +42,12 @@ class SecurityController extends Controller {
     /**
      * @Route("/logout", name="admin.logout")
      */
-    public function logoutAction() {
+    public function logoutAction()
+    {
 
     }
 
-     /**
+    /**
      * @param Request $request
      * @return Response
      *
@@ -62,7 +56,7 @@ class SecurityController extends Controller {
     public function newUserAction(Request $request)
     {
         $adminContext = $this->get('admin.context');
-        $config = $adminContext->getActiveModuleForAction('add', 'admin-users');
+        $config       = $adminContext->getActiveModuleForAction('add', 'admin-users');
 
         /** @var AdminUser $user */
         $user = new $config['entity']();
@@ -70,25 +64,28 @@ class SecurityController extends Controller {
 
         $form = $this->createFormBuilder($user, [
             'action' => $this->generateUrl('admin.user.new'),
-            'attr' => ['class' => 'form-horizontal']
+            'attr'   => ['class' => 'form-horizontal']
         ])
             ->add('login', null, ['attr' => ['data-column' => 'text']])
-            ->add('password', 'repeated', array(
-                'type' => 'password',
+            ->add('password', RepeatedType::class, [
+                'type'            => PasswordType::class,
                 'invalid_message' => 'The password fields must match.',
-                'options' => array('attr' => array('data-column' => 'text')),
-                'required' => true,
-                'first_options'  => array('label' => 'Password'),
-                'second_options' => array('label' => 'Repeat Password'),
-            ))
+                'options'         => ['attr' => ['data-column' => 'text']],
+                'required'        => true,
+                'first_options'   => ['label' => 'Password'],
+                'second_options'  => ['label' => 'Repeat Password'],
+            ])
             ->add('rights', null, ['attr' => ['style' => 'width: 400px;', 'data-column' => 'select']])
             ->getForm();
 
         $form->handleRequest($request);
 
-        if($form->isValid()){
+        if ($form->isValid()) {
             if ($user->getRights()->count()) {
-                $password = $this->get('security.encoder_factory')->getEncoder($user)->encodePassword($user->getPassword(), $user->getSalt());
+                /** @var PasswordEncoderInterface $encoder */
+                $encoder  = $this->get('security.encoder_factory')->getEncoder($user);
+                $password = $encoder->encodePassword($user->getPassword(), $user->getSalt());
+
                 $user
                     ->setPassword($password)
                     ->setIsActive(true);
@@ -101,7 +98,7 @@ class SecurityController extends Controller {
                 $this->addFlash('success', 'New user has been added!');
 
                 return $this->redirectToRoute('admin.dictionary.default', ['module' => 'admin-users']);
-            }else{
+            } else {
                 $form->get('rights')->addError(new FormError('Minimum one right need to be added.'));
             }
         }

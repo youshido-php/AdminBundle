@@ -9,23 +9,13 @@ namespace Youshido\AdminBundle\Form\Type;
 
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class WysiwygType extends AbstractType
 {
 
     public function getParent()
     {
-        return 'textarea';
-    }
-
-    /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
-     */
-    public function getName()
-    {
-        return 'wysiwyg';
+        return TextareaType::class;
     }
 }

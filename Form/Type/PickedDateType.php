@@ -9,6 +9,7 @@ namespace Youshido\AdminBundle\Form\Type;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PickedDateType extends AbstractType
@@ -16,7 +17,7 @@ class PickedDateType extends AbstractType
 
     public function getParent()
     {
-        return 'date';
+        return DateType::class;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -27,16 +28,5 @@ class PickedDateType extends AbstractType
             'widget' => 'single_text',
             'format' => 'yyyy-MM-dd',
         ]);
-    }
-
-
-    /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
-     */
-    public function getName()
-    {
-        return 'picked_date';
     }
 }

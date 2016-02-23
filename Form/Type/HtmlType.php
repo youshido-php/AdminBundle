@@ -9,22 +9,13 @@ namespace Youshido\AdminBundle\Form\Type;
 
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class HtmlType extends AbstractType
 {
 
     public function getParent()
     {
-        return 'textarea';
-    }
-
-    /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
-     */
-    public function getName()
-    {
-        return 'html';
+        return TextareaType::class;
     }
 }
