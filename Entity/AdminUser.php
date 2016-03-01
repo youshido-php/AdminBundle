@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
-use Youshido\DoctrineExtensionBundle\Traits\TimetrackableTrait;
 
 /**
  * AdminUser
@@ -17,8 +16,6 @@ use Youshido\DoctrineExtensionBundle\Traits\TimetrackableTrait;
  */
 class AdminUser implements AdvancedUserInterface, \Serializable
 {
-    use TimetrackableTrait;
-
     /**
      * @var integer
      *
@@ -49,7 +46,6 @@ class AdminUser implements AdvancedUserInterface, \Serializable
      */
     protected $isActive;
 
-
     /**
      * @ORM\ManyToMany(targetEntity="AdminRight",cascade={"persist"})
      * @ORM\JoinTable(name="admin_user_roles",
@@ -59,6 +55,19 @@ class AdminUser implements AdvancedUserInterface, \Serializable
      **/
     protected $rights;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime")
+     */
+    private $updatedAt;
 
     /**
      * Get id
@@ -161,12 +170,14 @@ class AdminUser implements AdvancedUserInterface, \Serializable
 
     public function getRoles()
     {
+        $roles = [];
+
         foreach ($this->getRights() as $right) {
             $roles[] = $right->getId();
         }
+
         return $roles;
     }
-
 
     public function getSalt()
     {
@@ -260,5 +271,58 @@ class AdminUser implements AdvancedUserInterface, \Serializable
     public function getRights()
     {
         return $this->rights;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     *
+     * @return AdminUser
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param \DateTime $updatedAt
+     *
+     * @return AdminUser
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     */
+    public function setUpUpdatedAt()
+    {
+        $this->setUpdatedAt(new \DateTime());
+
+        if(!$this->getId()) {
+            $this->setCreatedAt(new \DateTime());
+        }
     }
 }
