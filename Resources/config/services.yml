@@ -47,3 +47,8 @@ services:
       class: Youshido\AdminBundle\Form\Type\ImageType
       tags:
           - { name: form.type, alias: image }
+
+  admin.form.type.date_range:
+      class: Youshido\AdminBundle\Form\Type\DateRangeType
+      tags:
+          - { name: form.type, alias: date_range }

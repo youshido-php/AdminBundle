@@ -19,6 +19,7 @@ use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Youshido\AdminBundle\Form\Model\Interfaces\RangableFormTypeInterface;
 use Youshido\AdminBundle\Service\AdminContext;
 
 class BaseEntityController extends Controller
@@ -46,8 +47,20 @@ class BaseEntityController extends Controller
         if (!empty($filterData)) {
             foreach ($filterData as $key => $value) {
                 if ($value) {
-                    $qb->andWhere(sprintf('t.%s = :%s_query', $key, $key));
-                    $qb->setParameter($key . '_query', $value);
+                    if ($value instanceof RangableFormTypeInterface) {
+                        if ($value->getStart()) {
+                            $qb->andWhere(sprintf('t.%s >= :%s_query_start', $key, $key));
+                            $qb->setParameter($key . '_query_start', $value->getStart());
+                        }
+
+                        if ($value->getEnd()) {
+                            $qb->andWhere(sprintf('t.%s <= :%s_query_end', $key, $key));
+                            $qb->setParameter($key . '_query_end', $value->getEnd());
+                        }
+                    } else {
+                        $qb->andWhere(sprintf('t.%s = :%s_query', $key, $key));
+                        $qb->setParameter($key . '_query', $value);
+                    }
                 }
             }
         }
@@ -132,10 +145,10 @@ class BaseEntityController extends Controller
 
     public function prepareFiltersToSave($filterData)
     {
-        foreach($filterData as $filter => $filterItemData) {
-            if(is_object($filterItemData) && method_exists($filterItemData, 'getId')){
+        foreach ($filterData as $filter => $filterItemData) {
+            if (is_object($filterItemData) && method_exists($filterItemData, 'getId')) {
                 $filterData[$filter] = [
-                    'id' => $filterItemData->getId(),
+                    'id'    => $filterItemData->getId(),
                     'class' => get_class($filterItemData)
                 ];
             }
@@ -172,7 +185,7 @@ class BaseEntityController extends Controller
 
         if (!empty($moduleConfig['filters'])) {
             foreach ($moduleConfig['filters'] as $key => $filterOptions) {
-                $options                                   = array_merge_recursive($moduleConfig['columns'][$key], (array)$filterOptions);
+                $options                                   = array_merge($moduleConfig['columns'][$key], (array)$filterOptions);
                 $options['options']['required']            = false;
                 $options['options']['label']               = false;
                 $options['options']['attr']['placeholder'] = $filterOptions['title'];

@@ -19,6 +19,8 @@
         {% elseif combinedAttr['data-column'] == 'textarea' %}
             {% set class = 'col-md-10' %}
             {% set combinedAttr = combinedAttr|merge({ rows: 10 }) %}
+        {% elseif combinedAttr['data-column'] == 'date_range' %}
+            {% set class = 'col-md-12' %}
         {% elseif combinedAttr['data-column'] == 'html' %}
             {% set class = 'col-md-10' %}
             {% set combinedAttr = combinedAttr|merge({ style: (combinedAttr.style is defined ? combinedAttr.style : '') ~ 'display: none;' }) %}
@@ -168,6 +170,23 @@
     <input type="file" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
 {%- endblock image_widget -%}
 
+{%- block date_range_widget -%}
+    {% for child in form %}
+        {{ loop.first ? 'From' : 'To' }}
+
+        <input type="text" id="{{ child.vars.id }}" class="form-control" name="{{ child.vars.full_name }}" {% if child.vars.value is not empty %}value="{{ child.vars.value }}" {% endif %}/>
+
+        <script>
+            $(document).ready(function() {
+                $('#{{ child.vars.id }}').datetimepicker({
+                    pickTime: false,
+                    format: "YYYY-MM-DD"
+                });
+            });
+        </script>
+    {% endfor %}
+{%- endblock date_range_widget -%}
+
 {%- block wysiwyg_widget -%}
     <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
 
@@ -185,8 +204,10 @@
                 minHeight: 200,
                 lang: 'en',
                 custom_css: ['css/main.css'],
-                base_href: "http://{{ app.request.baseUrl }}"
+                base_href: "{{ app.request.scheme }}://{{ app.request.baseUrl }}"
             });
         });
     </script>
 {%- endblock wysiwyg_widget -%}
+
+
