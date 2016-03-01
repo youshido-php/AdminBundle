@@ -29,4 +29,10 @@ class PickedDateType extends AbstractType
             'format' => 'yyyy-MM-dd',
         ]);
     }
+
+
+    public function getBlockPrefix()
+    {
+        return 'picked_date';
+    }
 }

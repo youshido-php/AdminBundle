@@ -18,4 +18,9 @@ class HtmlType extends AbstractType
     {
         return TextareaType::class;
     }
+
+    public function getBlockPrefix()
+    {
+        return 'html';
+    }
 }

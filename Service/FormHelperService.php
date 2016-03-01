@@ -20,11 +20,7 @@ class FormHelperService
 
     public function buildFormItem($column, $info, FormBuilder $formBuilder)
     {
-        $typeObject = new $info['type'];
-        $attr = [
-            'data-column' => $typeObject->getBlockPrefix()
-        ];
-
+        $attr = [];
         if(isset($info['options']['attr'])){
             $attr = array_merge($info['options']['attr'], $attr);
         }
@@ -61,7 +57,7 @@ class FormHelperService
                     };
                 }
 
-                $formBuilder->add($column, 'entity', $options);
+                $formBuilder->add($column, EntityType::class, $options);
                 break;
 
             default:

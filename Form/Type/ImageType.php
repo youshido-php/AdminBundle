@@ -19,4 +19,10 @@ class ImageType extends AbstractType
         return FileType::class;
     }
 
+
+    public function getBlockPrefix()
+    {
+        return 'image';
+    }
+
 }

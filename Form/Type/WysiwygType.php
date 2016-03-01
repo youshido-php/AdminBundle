@@ -18,4 +18,9 @@ class WysiwygType extends AbstractType
     {
         return TextareaType::class;
     }
+
+    public function getBlockPrefix()
+    {
+        return 'wysiwyg';
+    }
 }
