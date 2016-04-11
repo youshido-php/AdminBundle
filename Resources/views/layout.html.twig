@@ -39,7 +39,7 @@
     {{ include('@YAdmin/additional-css.html.twig') }}
 </head>
 {% block bodyTags %}
-    {{ include('@YAdmin/_elements/body-start.html.twig') }}
+    <body>
     {% block body %}
         <div id="main">
 
@@ -110,7 +110,7 @@
         </div>
         {% for label, flashes in app.session.flashbag.all %}
             {% for flash in flashes %}
-            <div class="notification-handler" data-type="{{ label }}" data-style="{{ label }}">{{ flash }}</div>
+                <div class="notification-handler" data-type="{{ label }}" data-style="{{ label }}">{{ flash }}</div>
             {% endfor %}
         {% endfor %}
 
@@ -126,6 +126,7 @@
         <script src="vendor/plugins/datepicker/js/bootstrap-datetimepicker.min.js"></script>
         <script src="vendor/plugins/magnific/jquery.magnific-popup.js"></script>
     {% endblock %}
+
     {% block javascripts %}
         <!-- Theme Javascript -->
         <script src="assets/js/utility/utility.js"></script>

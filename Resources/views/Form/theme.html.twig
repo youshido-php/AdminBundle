@@ -40,12 +40,8 @@
 {%- endblock collection_widget -%}
 
 {%- block checkbox_widget -%}
-    <div style="margin-top: 10px">
-        <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
-
-        {% if attr.label is defined %}
-            {{ attr.label }}
-        {% endif %}
+    <div class="col-md-8 col-md-offset-2">
+        {{ parent() }}
     </div>
 {%- endblock checkbox_widget -%}
 
@@ -127,8 +123,8 @@
 
 {%- block image_widget -%}
     <div>
-        {% if data.pathname is defined and data.pathname %}
-            <img src="{{ data.pathname | imagine_filter('my_thumb') }}" style="width: 100px; background: repeat url('/bundles/yadmin/assets/assets/img/stock/bg-image.jpg')"/> <br/>
+        {% if data.pathname is defined and data.pathname and not isTypeOf(data, 'Symfony\\Component\\HttpFoundation\\File\\UploadedFile') %}
+            <img src="{{ data.pathname | imagine_filter('thumbnail_120x90') }}" style="width: 100px; background: repeat url('/bundles/yadmin/assets/assets/img/stock/bg-image.jpg')"/> <br/>
         {% else %}
             <small>no file</small>
         {% endif %}

@@ -16,9 +16,10 @@ class AdminExtension extends \Twig_Extension
 
     public function getFunctions()
     {
-        return array(
-            new \Twig_SimpleFunction('routeExist', array($this, 'routeExists')),
-        );
+        return [
+            new \Twig_SimpleFunction('routeExist', [$this, 'routeExists']),
+            new \Twig_SimpleFunction('isTypeOf', [$this, 'isTypeOf']),
+        ];
     }
 
     public function routeExists($name)
@@ -26,6 +27,15 @@ class AdminExtension extends \Twig_Extension
         $router = $this->container->get('router');
 
         return (null === $router->getRouteCollection()->get($name)) ? false : true;
+    }
+
+    public function isTypeOf($object, $type)
+    {
+        if (!is_object($object)) {
+            throw new \Exception('First argument must be object for "isTypeOf" twig function ');
+        }
+
+        return get_class($object) === $type;
     }
 
     /**

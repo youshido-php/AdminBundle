@@ -80,14 +80,13 @@
                             {% else %}
                                 <small>no file</small>
                             {% endif %}
-                        {% elseif columnInfo.type == "image" %}
-                            {% set path = attribute(object, columnName ~ "Path") %}
+                        {% elseif columnInfo.type == "Youshido\\AdminBundle\\Form\\Type\\ImageType" %}
+                            {% set path = attribute(object, columnName) %}
                             {% if path %}
-                                <img src="{{ path | imagine_filter('preview_50') }}"/>
+                                <img src="{{ path | imagine_filter('thumbnail_50x50') }}"/>
                             {% else %}
                                 <small>no image</small>
                             {% endif %}
-                        {% elseif columnInfo.type == "collection" %}
                         {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\EntityType" %}
                             {{ value }}
                         {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\CheckboxType" %}

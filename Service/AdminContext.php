@@ -57,6 +57,7 @@ class AdminContext
 
                     $config = array_merge_recursive($config, Yaml::parse(file_get_contents($configPath)));
                 }
+
                 unset($config['imports']);
             }
 
@@ -105,11 +106,13 @@ class AdminContext
                     $this->modules[$module['group']]['nodes'][$key] = $module;
                 }
             }
+
             foreach ($this->modules as $key => $module) {
                 if (empty($module['type']) || $module['type'] == "Group" && empty($module['nodes'])) {
                     unset($this->modules[$key]);
                 }
             }
+
             $this->config['modules'] = $this->modules;
         }
 

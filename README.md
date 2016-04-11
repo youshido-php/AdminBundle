@@ -14,7 +14,6 @@ $bundles = [
     //...
 
     new Youshido\AdminBundle\YAdminBundle(),
-    new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
     new Liip\ImagineBundle\LiipImagineBundle(),
 ];
 ```
@@ -71,10 +70,6 @@ _liip_imagine:
 ``` yaml
 //config.yml
 
-stof_doctrine_extensions:
-    orm:
-        default:
-          timestampable: true
 
 liip_imagine:
     resolvers:
@@ -83,10 +78,14 @@ liip_imagine:
 
     filter_sets:
         cache: ~
-        my_thumb:
+        thumbnail_120x90:
             quality: 75
             filters:
                 thumbnail: { size: [120, 90], mode: outbound }
+        thumbnail_50x50:
+            quality: 75
+            filters:
+                thumbnail: { size: [50, 50], mode: outbound }
 
 !!!
 twig:
