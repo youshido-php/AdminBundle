@@ -18,21 +18,26 @@ use Symfony\Component\Console\Question\Question;
 
 class AdminGenerateCommand extends ContainerAwareCommand
 {
+    /** @var string string */
     private $tabPrefix = '            ';
+
+    /** @var string string */
     private $defaultConfigPath = 'Resources/config/config.default.yml';
+
     /** @var  DoctrineOrmTypeGuesser */
     private $guesser;
+
+    private $customTypeMap = [
+        'Symfony\Component\Form\Extension\Core\Type\TextareaType' => 'Youshido\AdminBundle\Form\Type\WysiwygType',
+        'Symfony\Component\Form\Extension\Core\Type\DateTimeType' => 'Youshido\AdminBundle\Form\Type\PickedDateTimeType',
+        'Symfony\Component\Form\Extension\Core\Type\DateType'     => 'Youshido\AdminBundle\Form\Type\PickedDateType',
+    ];
 
     protected function configure()
     {
         $this
             ->setName('admin:generate')
-            ->setDescription('Generate admin config for entity')
-            ->addArgument(
-                'entity',
-                InputArgument::REQUIRED,
-                'For witch entity do you want to generate config?'
-            );
+            ->setDescription('Generate admin config for entity');
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output)
@@ -40,21 +45,23 @@ class AdminGenerateCommand extends ContainerAwareCommand
         $this->guesser = new DoctrineOrmTypeGuesser($this->getContainer()->get('doctrine'));
     }
 
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $helper = $this->getHelper('question');
-        $entity = $input->getArgument('entity');
+
+        $question = new Question('Please input class of your model: ');
+        $entity   = $helper->ask($input, $output, $question);
+
         /** @var ClassMetadata $metadata */
         $metadata = $this->getContainer()->get('doctrine')->getManager()->getClassMetadata($entity);
 
         if ($metadata) {
-            $question = new Question('Please enter admin controller [dictionary]: ', 'dictionary');
+            $question   = new Question('Please enter admin controller [dictionary]: ', 'dictionary');
             $controller = $helper->ask($input, $output, $question);
 
-            $key = Inflector::tableize($this->getEntityName($metadata));
+            $key      = Inflector::tableize($this->getEntityName($metadata));
             $question = new Question(sprintf('Please enter admin module key [%s]: ', $key), $key);
-            $key = $helper->ask($input, $output, $question);
+            $key      = $helper->ask($input, $output, $question);
 
             if ($controller && $key) {
                 $content = $this->getConfigFileContent($metadata, $controller, $key);
@@ -63,7 +70,7 @@ class AdminGenerateCommand extends ContainerAwareCommand
                     . sprintf('/config/admin/structure.%s.yml', $key);
 
                 if (file_put_contents($targetPath, $content)) {
-                    $output->writeln(sprintf('<fg=green>File was saved to \'%s\'</fg=green>', $targetPath));
+                    $output->writeln(sprintf('<info>File was saved to "%s"</info>', $targetPath));
                 } else {
                     $output->writeln('<error>Can\'t save file (check writes permissions)</error>');
                 }
@@ -72,23 +79,23 @@ class AdminGenerateCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param $metadata ClassMetadata
+     * @param $metadata   ClassMetadata
      * @param $controller string
-     * @param $key string
+     * @param $key        string
      * @return string
      */
     private function getConfigFileContent($metadata, $controller, $key)
     {
-        $listShowFields = [];
+        $listShowFields   = [];
         $actionHideFields = [];
-        $columns = [];
+        $columns          = [];
 
         foreach ($metadata->getFieldNames() as $fieldName) {
             $columns[$fieldName] = [
                 'type' => $this->recognizeFieldType($metadata, $fieldName)
             ];
 
-            if($columns[$fieldName]['type'] == 'boolean'){
+            if ($columns[$fieldName]['type'] == 'Symfony\Component\Form\Extension\Core\Type\CheckboxType') {
                 $columns[$fieldName]['required'] = 'false';
             }
 
@@ -101,7 +108,7 @@ class AdminGenerateCommand extends ContainerAwareCommand
 
         foreach ($metadata->getAssociationMappings() as $field) {
             $columns[$field['fieldName']] = [
-                'type' => 'entity',
+                'type'   => 'entity',
                 'entity' => $field['targetEntity']
             ];
         }
@@ -130,24 +137,28 @@ class AdminGenerateCommand extends ContainerAwareCommand
     public function recognizeFieldType($metadata, $fieldName)
     {
         $guess = $this->guesser->guessType($metadata->getName(), $fieldName);
-        $type = $guess->getType();
+        $type  = $guess->getType();
 
-        return str_replace(['checkbox'], ['boolean'], $type);
+        if (array_key_exists($type, $this->customTypeMap)) {
+            $type = $this->customTypeMap[$type];
+        }
+
+        return $type;
 
     }
 
     private function generateConfig($key, $title, $controller, $entity, $columns, $listShowFields, $actionsHideFields)
     {
-        $bundlePath = $this->getContainer()->getParameter('kernel.root_dir').'/../vendor/youshido/admin/';
-        $configContent = file_get_contents($bundlePath.$this->defaultConfigPath);
+        $bundlePath    = $this->getContainer()->getParameter('kernel.root_dir') . '/../vendor/youshido/admin/';
+        $configContent = file_get_contents($bundlePath . $this->defaultConfigPath);
 
         $columnsContent = '';
-        foreach($columns as $name => $options){
+        foreach ($columns as $name => $options) {
             $columnsContent .= $this->formatColumn($name, $options);
         }
 
         $hideContent = '~';
-        if($actionsHideFields){
+        if ($actionsHideFields) {
             $hideContent = sprintf("\n%s    hide: [%s]", $this->tabPrefix, implode(', ', $actionsHideFields));
         }
 
@@ -174,7 +185,7 @@ class AdminGenerateCommand extends ContainerAwareCommand
     {
 
         $optionsContent = '';
-        foreach($options as $key => $option){
+        foreach ($options as $key => $option) {
             $optionsContent .= sprintf("\n    %s%s: %s", $this->tabPrefix, $key, $option);
         }
 

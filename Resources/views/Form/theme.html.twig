@@ -121,6 +121,30 @@
     </script>
 {%- endblock picked_date_widget -%}
 
+{%- block picked_date_time_widget -%}
+    {%- set type = type|default('text') -%}
+    {% set attr = attr|merge({ class: (attr.class is defined ? attr.class : '') ~ ' form-control' }) %}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+
+    {% if attr.help is defined and attr.help %}
+        <span class="help-block mt5">
+            <p class="help-block">{{ attr.help }}</p>
+        </span>
+    {% endif %}
+
+    <script>
+        $(document).ready(function() {
+            $('#{{ id }}').datetimepicker({
+                pickTime: true,
+                pickDate: true,
+                format: "YYYY-MM-DD HH:mm",
+                pick12HourFormat: false,
+                pickSeconds: false
+            });
+        });
+    </script>
+{%- endblock picked_date_time_widget -%}
+
 {%- block image_widget -%}
     <div>
         {% if data.pathname is defined and data.pathname and not isTypeOf(data, 'Symfony\\Component\\HttpFoundation\\File\\UploadedFile') %}

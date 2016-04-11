@@ -67,7 +67,7 @@
                             {% else %}
                                 <span class="fw600">{{ value }}</span>
                             {% endif %}
-                        {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\DatetimeType" %}
+                        {% elseif columnInfo.type in ["Symfony\\Component\\Form\\Extension\\Core\\Type\\DatetimeType", "Youshido\\AdminBundle\\Form\\Type\\PickedDateTimeType"]  %}
                             {{ value ? value|date("m/d/Y H:i:s") : '' }}
                         {% elseif columnInfo.type in ["Youshido\\AdminBundle\\Form\\Type\\PickedDateType", "Symfony\\Component\\Form\\Extension\\Core\\Type\\DateType"] %}
                             {{ value ? value|date("m/d/Y") : '' }}

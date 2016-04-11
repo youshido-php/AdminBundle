@@ -16,16 +16,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Youshido\AdminBundle\Entity\AdminRight;
 use Youshido\AdminBundle\Entity\AdminUser;
 
-class AdminSetupCommand extends ContainerAwareCommand {
+class AdminSetupCommand extends ContainerAwareCommand
+{
 
-    protected function configure() {
+    protected function configure()
+    {
         $this
             ->setName('admin:setup')
-            ->setDescription('Initialize admin structure')
-        ;
+            ->setDescription('Initialize admin structure');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         $right = new AdminRight();
         $right->setId('ROLE_SUPER_ADMIN');
         $right->setTitle('Super Admin');
@@ -36,15 +38,15 @@ class AdminSetupCommand extends ContainerAwareCommand {
         $admin->addRight($right);
 
         $passwordText = '1';
-        $password = $this->getContainer()->get('security.encoder_factory')->getEncoder($admin)->encodePassword($passwordText, $admin->getSalt());
+        $password     = $this->getContainer()->get('security.encoder_factory')->getEncoder($admin)->encodePassword($passwordText, $admin->getSalt());
         $admin->setPassword($password);
-        $m = $this->getContainer()->get('doctrine')->getManager();
+        $em = $this->getContainer()->get('doctrine')->getManager();
 
-        $m->persist($admin);
-        $m->persist($right);
-        $m->flush();
+        $em->persist($admin);
+        $em->persist($right);
+        $em->flush();
 
-        $output->writeln('Structure initialized.');
-        $output->writeln('User "admin" with password "1" created.');
+        $output->writeln(sprintf('<info>%s</info>', 'Structure initialized.'));
+        $output->writeln(sprintf('<info>%s</info>', 'User "admin" with password "1" created.'));
     }
 }
