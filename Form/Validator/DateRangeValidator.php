@@ -45,6 +45,10 @@ class DateRangeValidator implements EventSubscriberInterface
         /* @var $dateRange DateRange */
         $dateRange = $form->getNormData();
 
+        if(!$dateRange) {
+            return;
+        }
+
         if ($dateRange->start > $dateRange->end) {
             $form->addError(new FormError('date_range.invalid.end_before_start'));
         }
