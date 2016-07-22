@@ -52,8 +52,10 @@ class FormHelperService extends ContainerAware
                             $handlers = (array)$info['handler'];
 
                             foreach ($handlers as $handler) {
-                                $queryBuilder = $this->container->get('adminContext')
-                                    ->prepareService($handler[0])->$handler[1]($queryBuilder);
+                                $service = $this->container->get('adminContext')->prepareService($handler[0]);
+                                $method  = $handler[1];
+
+                                $queryBuilder = $service->$method($queryBuilder);
                             }
                         }
 
