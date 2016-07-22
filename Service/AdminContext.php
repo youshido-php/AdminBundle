@@ -315,16 +315,19 @@ class AdminContext
     {
         $module = $this->getActiveModule();
 
-        $service = $this->prepareService($module['back_url_handler'][0]);
-        $method  = $module['back_url_handler'][1];
 
-        $backUrl = $service->$method();
 
-        if(!empty($module['back_url_handler']) && $backUrl){
-            return $backUrl;
-        }else{
-            return $this->generateModuleLink($module['type'], $module['name']);
+        if(!empty($module['back_url_handler'])){
+            $service = $this->prepareService($module['back_url_handler'][0]);
+            $method  = $module['back_url_handler'][1];
+
+            $backUrl = $service->$method();
+            if($backUrl) {
+                return $backUrl;
+            }
         }
+
+        return $this->generateModuleLink($module['type'], $module['name']);
     }
 
     protected function generateModuleLink($type, $module)
