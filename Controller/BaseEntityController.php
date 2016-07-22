@@ -106,7 +106,10 @@ class BaseEntityController extends Controller
             $handlers = (array)$moduleConfig['actions']['default']['handler'];
 
             foreach ($handlers as $handler) {
-                $qb = $this->get('adminContext')->prepareService($handler[0])->$handler[1]($qb);
+                $service = $this->get('adminContext')->prepareService($handler[0]);
+                $method  = $handler[1];
+
+                $qb = $service->$method($qb);
             }
         }
 

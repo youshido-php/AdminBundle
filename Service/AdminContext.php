@@ -75,7 +75,11 @@ class AdminContext
 
                     if(array_key_exists('conditions', $security)){
                         foreach ($security['conditions'] as $showCondition) {
-                            if(!($this->prepareService($showCondition[0])->{$showCondition[1]}())){
+                            $service = $this->prepareService($showCondition[0]);
+                            $method  = $showCondition[1];
+                            $show    = $service->$method();
+
+                            if (!$show) {
                                 continue 2;
                             }
                         }
@@ -311,11 +315,15 @@ class AdminContext
     {
         $module = $this->getActiveModule();
 
-        if(!empty($module['back_url_handler'])
-            && ($backUrl = $this->prepareService($module['back_url_handler'][0])->{$module['back_url_handler'][1]}())){
+        $service = $this->prepareService($module['back_url_handler'][0]);
+        $method  = $module['back_url_handler'][1];
+
+        $backUrl = $service->$method();
+
+        if(!empty($module['back_url_handler']) && $backUrl){
             return $backUrl;
         }else{
-           return $this->generateModuleLink($module['type'], $module['name']);
+            return $this->generateModuleLink($module['type'], $module['name']);
         }
     }
 

@@ -49,7 +49,11 @@ class Security extends ContainerAware
     public function checkServices($object, $services)
     {
         foreach ((array)$services as $service) {
-            if (!$this->container->get('adminContext')->prepareService($service[0])->$service[1]($object)) {
+            $service = $this->container->get('adminContext')->prepareService($service[0]);
+            $method  = $service[1];
+            $valid   = $service->$method($object);
+
+            if (!$valid) {
                 return false;
             }
         }
