@@ -25,4 +25,9 @@ class ImageType extends AbstractType
         return 'image';
     }
 
+    public function getName()
+    {
+        return 'image';
+    }
+
 }

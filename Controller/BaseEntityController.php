@@ -91,7 +91,10 @@ class BaseEntityController extends Controller
             $handlers = (array)$moduleConfig['actions']['default']['handler'];
 
             foreach ($handlers as $handler) {
-                $qb = $this->get('admin.context')->prepareService($handler[0])->$handler[1]($qb);
+                $service = (string)$handler[0];
+                $method  = (string)$handler[1];
+
+                $qb = $this->get('admin.context')->prepareService($service)->$method($qb);
             }
         }
 
@@ -324,7 +327,10 @@ class BaseEntityController extends Controller
                 $this->saveValidObject($object);
                 $this->addFlash('success', 'Your changes was has been saved');
                 if (!empty($moduleConfig['handlers']['redirect'])) {
-                    return $this->get(substr($moduleConfig['handlers']['redirect'][0], 1))->$moduleConfig['handlers']['redirect'][1]($object);
+                    $service = substr($moduleConfig['handlers']['redirect'][0], 1);
+                    $method  = $moduleConfig['handlers']['redirect'][1];
+
+                    return $this->get($service)->$method($object);
                 } else {
                     return $this->redirectToRoute($moduleConfig['actions']['edit']['route'], ['module' => $moduleConfig['name'], 'id' => $object->getId()]);
                 }

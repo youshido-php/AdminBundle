@@ -23,4 +23,9 @@ class HtmlType extends AbstractType
     {
         return 'html';
     }
+
+    public function getName()
+    {
+        return 'html';
+    }
 }

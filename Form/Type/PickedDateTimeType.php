@@ -35,4 +35,9 @@ class PickedDateTimeType extends AbstractType
     {
         return 'picked_date_time';
     }
+
+    public function getName()
+    {
+        return 'picked_date_time';
+    }
 }

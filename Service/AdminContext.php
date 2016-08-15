@@ -82,7 +82,10 @@ class AdminContext
 
                     if (array_key_exists('conditions', $security)) {
                         foreach ($security['conditions'] as $showCondition) {
-                            if (!($this->prepareService($showCondition[0])->{$showCondition[1]}())) {
+                            $service = (string)$showCondition[0];
+                            $method  = (string)$showCondition[1];
+
+                            if (!($this->prepareService($service)->$method())) {
                                 continue 2;
                             }
                         }

@@ -67,29 +67,29 @@
                             {% else %}
                                 <span class="fw600">{{ value }}</span>
                             {% endif %}
-                        {% elseif columnInfo.type in ["Symfony\\Component\\Form\\Extension\\Core\\Type\\DatetimeType", "Youshido\\AdminBundle\\Form\\Type\\PickedDateTimeType"]  %}
+                        {% elseif columnInfo.type in ["Symfony\\Component\\Form\\Extension\\Core\\Type\\DatetimeType", "Youshido\\AdminBundle\\Form\\Type\\PickedDateTimeType", "picked_date_time", "datetime"]  %}
                             {{ value ? value|date("m/d/Y H:i:s") : '' }}
-                        {% elseif columnInfo.type in ["Youshido\\AdminBundle\\Form\\Type\\PickedDateType", "Symfony\\Component\\Form\\Extension\\Core\\Type\\DateType"] %}
+                        {% elseif columnInfo.type in ["Youshido\\AdminBundle\\Form\\Type\\PickedDateType", "Symfony\\Component\\Form\\Extension\\Core\\Type\\DateType", "picked_date", "date"] %}
                             {{ value ? value|date("m/d/Y") : '' }}
-                        {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\EntityType" and columnInfo.multiple is defined %}
+                        {% elseif columnInfo.type in ["Symfony\\Component\\Form\\Extension\\Core\\Type\\EntityType", "choice"] and columnInfo.multiple is defined %}
                             {{ value|join(', ') }}
-                        {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\FileType" %}
+                        {% elseif columnInfo.type in ["Symfony\\Component\\Form\\Extension\\Core\\Type\\FileType", "file"] %}
                             {% set path = attribute(object, columnName ~ "Path") %}
                             {% if path %}
                                 <a href="{{ path }}" target="_blank">view file</a>
                             {% else %}
                                 <small>no file</small>
                             {% endif %}
-                        {% elseif columnInfo.type == "Youshido\\AdminBundle\\Form\\Type\\ImageType" %}
+                        {% elseif columnInfo.type in ["Youshido\\AdminBundle\\Form\\Type\\ImageType", "image"] %}
                             {% set path = attribute(object, columnName) %}
                             {% if path %}
                                 <img src="{{ path | imagine_filter('thumbnail_50x50') }}"/>
                             {% else %}
                                 <small>no image</small>
                             {% endif %}
-                        {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\EntityType" %}
+                        {% elseif columnInfo.type in ["Symfony\\Component\\Form\\Extension\\Core\\Type\\EntityType", "choice"] %}
                             {{ value }}
-                        {% elseif columnInfo.type == "Symfony\\Component\\Form\\Extension\\Core\\Type\\CheckboxType" %}
+                        {% elseif columnInfo.type in ["Symfony\\Component\\Form\\Extension\\Core\\Type\\CheckboxType", "checkbox"]%}
                             {% if value %}
                                 <span class="badge badge-success">yes</span>
                             {% else %}

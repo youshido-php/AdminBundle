@@ -23,4 +23,9 @@ class WysiwygType extends AbstractType
     {
         return 'wysiwyg';
     }
+
+    public function getName()
+    {
+        return 'wysiwyg';
+    }
 }

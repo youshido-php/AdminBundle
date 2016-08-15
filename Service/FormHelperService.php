@@ -48,8 +48,11 @@ class FormHelperService
                             $handlers = (array)$info['handler'];
 
                             foreach ($handlers as $handler) {
+                                $service = (string)$handler[0];
+                                $method  = (string)$handler[1];
+
                                 $queryBuilder = $this->container->get('admin.context')
-                                    ->prepareService($handler[0])->$handler[1]($queryBuilder);
+                                    ->prepareService($service)->$method($queryBuilder);
                             }
                         }
 
