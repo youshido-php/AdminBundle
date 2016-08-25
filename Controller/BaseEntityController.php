@@ -58,8 +58,13 @@ class BaseEntityController extends Controller
                             $qb->setParameter($key . '_query_end', $value->getEnd());
                         }
                     } else {
-                        $qb->andWhere(sprintf('t.%s = :%s_query', $key, $key));
-                        $qb->setParameter($key . '_query', $value);
+                        if(isset($moduleConfig['filters'][$key]['like']) && isset($moduleConfig['filters'][$key]['like'])) {
+                            $qb->andWhere(sprintf('t.%s LIKE :%s_query', $key, $key));
+                            $qb->setParameter($key . '_query', '%' . $value . '%');
+                        } else {
+                            $qb->andWhere(sprintf('t.%s = :%s_query', $key, $key));
+                            $qb->setParameter($key . '_query', $value);
+                        }
                     }
                 }
             }
