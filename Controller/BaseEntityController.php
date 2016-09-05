@@ -31,7 +31,7 @@ class BaseEntityController extends Controller
         $moduleConfig = $this->get('adminContext')->getActiveModuleForAction('default');
 
         $cachedFilterForm = $this->prepareSavedFilterData($this->get('session')->get($this->getFilterCacheKey($module), []));
-        $filterForm       = $this->createFilterForm($cachedFilterForm, $moduleConfig);
+        $filterForm       = $this->createFilterForm($cachedFilterForm, $this->get('adminContext')->getActiveModuleConfig());
 
         $filterForm->handleRequest($request);
         $filterData = $filterForm->isSubmitted() && $filterForm->isValid() ? $filterForm->getData() : $cachedFilterForm;

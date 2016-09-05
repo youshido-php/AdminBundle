@@ -275,6 +275,15 @@ class AdminContext
         return $structure;
     }
 
+    public function getActiveModuleConfig()
+    {
+        if($this->_activeModuleName) {
+            return $this->_modules[$this->_activeModuleName];
+        }
+
+        throw new \Exception('No active module config');
+    }
+
     protected function processActions($config)
     {
         if (empty($config['actions'])) {
