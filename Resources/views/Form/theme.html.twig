@@ -3,7 +3,7 @@
         {{- form_label(form) -}}
 
         {% set class = 'col-md-5' %}
-        {% set combinedAttr = form.vars.attr %}
+        {% set combinedAttr = form.vars.attr ? form.vars.attr : {'data-column': 'text'} %}
 
         {% if combinedAttr['data-column'] not in ['checkbox', 'form'] %}
             {% set combinedAttr = combinedAttr|merge({ class: (combinedAttr.class is defined ? combinedAttr.class : '') ~ 'form-control' }) %}
