@@ -1,7 +1,7 @@
 @font-face {
     font-family:icomoon;
     src:url('/bundles/yadmin/assets/assets/fonts/icomoon/icomoon.eot');
-    src:url('/bundles/yadmin/assets/assets/fonts/icomoon/icomoon.eot?') format("embedded-opentype"),
+    src:url('/bundles/yadmin/assets/assets/fonts/icomoon/icomoon.eot') format("embedded-opentype"),
         url('/bundles/yadmin/assets/assets/fonts/icomoon/icomoon.ttf') format("truetype"),
         url('/bundles/yadmin/assets/assets/fonts/icomoon/icomoon.woff') format("woff"),
         url('/bundles/yadmin/assets/assets/fonts/icomoon/icomoon.svg') format("svg");

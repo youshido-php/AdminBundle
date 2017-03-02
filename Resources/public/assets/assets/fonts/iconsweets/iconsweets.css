@@ -1,7 +1,7 @@
 @font-face {
 	font-family: 'IconSweets-Deluxe';
 	src:url('IconSweets-Deluxe.eot');
-	src:url('IconSweets-Deluxe.eot?') format('embedded-opentype'),
+	src:url('IconSweets-Deluxe.eot') format('embedded-opentype'),
 		url('IconSweets-Deluxe.woff') format('woff'),
 		url('IconSweets-Deluxe.ttf') format('truetype'),
 		url('IconSweets-Deluxe.svg') format('svg');

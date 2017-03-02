@@ -1,7 +1,7 @@
 @font-face {
    font-family: 'StateFaceRegular';
    src: url('stateface-regular-webfont.eot');
-   src: url('stateface-regular-webfont.eot?') format('embedded-opentype'),
+   src: url('stateface-regular-webfont.eot') format('embedded-opentype'),
 		url('stateface-regular-webfont.woff') format('woff'),
 		url('stateface-regular-webfont.ttf') format('truetype'),
 		url('stateface-regular-webfont.svg') format('svg');

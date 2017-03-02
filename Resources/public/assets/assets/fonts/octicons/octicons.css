@@ -1,7 +1,7 @@
 @charset "IBM437";
 @font-face {
     font-family: 'octicons';
-    src: url("octicons.eot?") format("embedded-opentype"), url("octicons.woff") format("woff"), url("octicons.ttf") format("truetype"), url("octicons.svg") format("svg");
+    src: url("octicons.eot") format("embedded-opentype"), url("octicons.woff") format("woff"), url("octicons.ttf") format("truetype"), url("octicons.svg") format("svg");
     font-weight: normal;
     font-style: normal;
 }
