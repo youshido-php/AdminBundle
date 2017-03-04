@@ -11,7 +11,11 @@ namespace Youshido\AdminBundle\Service;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilder;
+use Youshido\AdminBundle\Form\Type\PickedDateTimeType;
 
 class FormHelperService
 {
@@ -20,6 +24,13 @@ class FormHelperService
 
     public function buildFormItem($column, $info, FormBuilder $formBuilder)
     {
+        if (!is_array($info)) {
+            $info = [
+                'title' => $column,
+                'type' => $info
+            ];
+        }
+
         $attr = [];
         if(isset($info['options']['attr'])){
             $attr = array_merge($info['options']['attr'], $attr);
@@ -64,8 +75,22 @@ class FormHelperService
                 break;
 
             default:
-                $formBuilder->add($column, $info['type'], $options);
+                $formBuilder->add($column, $this->getClassForType($info['type']), $options);
         }
+    }
+
+    protected function getClassForType($type)
+    {
+        $types = [
+            'text' => TextType::class,
+            'choice' => ChoiceType::class,
+            'checkbox' => CheckboxType::class,
+            'date' => PickedDateTimeType::class,
+        ];
+        if (strpos($type, '\\') === false) {
+
+        }
+        return !empty($types[$type]) ? $types[$type] : $type;
     }
 
 
