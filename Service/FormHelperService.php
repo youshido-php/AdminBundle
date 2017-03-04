@@ -13,6 +13,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilder;
 use Youshido\AdminBundle\Form\Type\HtmlType;
@@ -87,6 +88,7 @@ class FormHelperService
     {
         $types = [
             'text' => TextType::class,
+            'textarea' => TextareaType::class,
             'choice' => ChoiceType::class,
             'checkbox' => CheckboxType::class,
             'date' => PickedDateType::class,
