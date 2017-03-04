@@ -318,6 +318,11 @@ class AdminContext
 
     protected function processColumnInfo($columnName, &$columnInfo, $structure)
     {
+        if (!empty($columnInfo) && !is_array($columnInfo)) {
+            $columnInfo = [
+                'type' => $columnInfo
+            ];
+        }
         if (empty($columnInfo['type'])) {
             $guess              = $this->guesser->guessType($structure['entity'], $columnName);
             $columnInfo['type'] = $guess->getType();
