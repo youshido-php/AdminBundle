@@ -15,7 +15,11 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilder;
+use Youshido\AdminBundle\Form\Type\HtmlType;
+use Youshido\AdminBundle\Form\Type\ImageType;
 use Youshido\AdminBundle\Form\Type\PickedDateTimeType;
+use Youshido\AdminBundle\Form\Type\PickedDateType;
+use Youshido\AdminBundle\Form\Type\WysiwygType;
 
 class FormHelperService
 {
@@ -85,7 +89,11 @@ class FormHelperService
             'text' => TextType::class,
             'choice' => ChoiceType::class,
             'checkbox' => CheckboxType::class,
-            'date' => PickedDateTimeType::class,
+            'date' => PickedDateType::class,
+            'datetime' => PickedDateTimeType::class,
+            'wysiwyg' => WysiwygType::class,
+            'image' => ImageType::class,
+            'html' => HtmlType::class,
         ];
         if (strpos($type, '\\') === false) {
 
