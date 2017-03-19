@@ -134,7 +134,7 @@
 {%- block picked_date_widget -%}
     {%- set type = type|default('text') -%}
     {% set attr = attr|merge({ class: (attr.class is defined ? attr.class : '') ~ ' form-control' }) %}
-    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+    <input type="{{ type == "date" ? "text" : type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ type == "date" ? value|date("Y-m-d") : value }}" {% endif %}/>
 
     {% if attr.help is defined and attr.help %}
         <span class="help-block mt5">

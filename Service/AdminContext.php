@@ -324,8 +324,6 @@ class AdminContext
     {
         $module = $this->getActiveModule();
 
-
-
         if(!empty($module['back_url_handler'])){
             $service = $this->prepareService($module['back_url_handler'][0]);
             $method  = $module['back_url_handler'][1];
