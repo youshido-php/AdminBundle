@@ -325,7 +325,7 @@ class BaseEntityController extends Controller
             if ($form->isValid()) {
                 $this->callHandlersWithParams('save', [$object, $request]);
                 $this->saveValidObject($object);
-                $this->addFlash('success', 'Your changes was has been saved');
+                $this->addFlash('success', 'Your changes have been saved');
                 if (!empty($moduleConfig['handlers']['redirect'])) {
                     $service = substr($moduleConfig['handlers']['redirect'][0], 1);
                     $method  = $moduleConfig['handlers']['redirect'][1];
